@@ -6,14 +6,6 @@ import (
 	"github.com/patrikeh/go-deep"
 )
 
-func updateDistanceNeuronV2(distance float64, neuron *float64) {
-	absDist := math.Abs(distance)
-
-	if distance > *neuron {
-		*neuron = absDist
-	}
-}
-
 type NormalCreature struct {
 	S                   Stats
 	X, Y                int
@@ -33,9 +25,17 @@ func (b *NormalCreature) GetCoordsXY() (int, int) {
 	return b.X, b.Y
 }
 
+func updateDistanceNeuronV2(distance float64, neuron *float64) {
+	absDist := math.Abs(distance)
+	if distance > *neuron {
+		*neuron = absDist
+	}
+}
+
 // Some how this determines sensory data for distance. It wasn't thought
 // much about.
 func (b *NormalCreature) Sense(objects []WorldObject, oscilator float64) []float64 {
+
 	bX, bY := b.GetCoordsXY()
 	var xPlusNeuron, xMinusNeuron, yPlusNeuron, yMinusNeuron float64
 	for _, obj := range objects {

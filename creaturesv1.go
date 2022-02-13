@@ -21,6 +21,9 @@ func (b *BasicCreature) GetCoordsXY() (int, int) {
 	return b.X, b.Y
 }
 
+func (b *BasicCreature) SetDebug() {
+}
+
 // Some how this determines sensory data for distance. It wasn't thought
 // much about.
 func (b *BasicCreature) Sense(objects []WorldObject) []float64 {

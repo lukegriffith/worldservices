@@ -18,18 +18,18 @@ func (t TestObject) GetCoordsXY() (int, int) {
 	return t.x, t.y
 }
 
-func (t TestObject) Process(g worldservices.Grid) {
+func (t TestObject) Process(g worldservices.Grid, osc float64) {
+}
+
+func (b TestObject) SetDebug() {
 }
 
 func TestGetObjectSenseData(t *testing.T) {
-
 	objects := []worldservices.WorldObject{
 		TestObject{3, 3},
 		TestObject{2, 2},
 	}
-	g := worldservices.NewGrid(objects, map[string]worldservices.WorldObject{}, 10)
-	g.UpdateLocationsCoords()
-
+	g := SetupTestGrid(objects)
 	obj := g.GetObjectSenseData(2, 3, 10)
 	t.Log(len(obj))
 	t.Log(obj)
@@ -37,4 +37,11 @@ func TestGetObjectSenseData(t *testing.T) {
 		t.Fail()
 	}
 
+}
+
+func SetupTestGrid(objects []worldservices.WorldObject) worldservices.Grid {
+
+	g := worldservices.NewGrid(objects, map[string]worldservices.WorldObject{}, 10)
+	g.UpdateLocationsCoords()
+	return g
 }
