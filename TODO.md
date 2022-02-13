@@ -3,3 +3,4 @@
 - [] ADD AN OSCILATION (Implemented, needs testing)
 - [] Add ID's to creatures to enable recall from array so debug index can be set correctly when clicked.
 - [] Add a different speed in stats and move further distance with it. 
+- [] !!!! Make sense a neural network its self too.
