@@ -30,7 +30,7 @@ func NewRandomStats() Stats {
 	return Stats{
 		randomNumber(60, 100),
 		randomNumber(1, 10),
-		randomNumber(1, 10),
+		randomNumber(10, 15),
 		randomNumber(1, 10),
 		randomNumber(0, 80),
 	}

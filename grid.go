@@ -14,6 +14,10 @@ type Grid struct {
 	Size      int
 }
 
+func NewGrid(obj []WorldObject, loc map[string]WorldObject, size int) Grid {
+	return Grid{obj, loc, size}
+}
+
 func (g *Grid) GetOrderedObjectListByFitness() []WorldObject {
 	ordered_objects := []WorldObject{}
 	grouped_objects := map[float64][]WorldObject{}
@@ -55,8 +59,13 @@ func (g *Grid) GetObjectAtCoords(x int, y int) (WorldObject, error) {
 func (g *Grid) UpdateLocationsCoords() {
 	locations := map[string]WorldObject{}
 	objects := g.GetOrderedObjectListByFitness()
-	for i, j := 0, len(objects)-1; i < j; i, j = i+1, j-2 {
-		obj := objects[i]
+	/*
+		for i, j := 0, len(objects)-1; i < j; i, j = i+1, j-2 {
+			obj := objects[i]
+			x, y := obj.GetCoordsXY()
+			locations[formatCoords(x, y)] = obj
+		}*/
+	for _, obj := range objects {
 		x, y := obj.GetCoordsXY()
 		locations[formatCoords(x, y)] = obj
 	}
@@ -83,13 +92,18 @@ func (g *Grid) GetObjectSenseData(x int, y int, vision int) []WorldObject {
 	}
 	c := cartesian.Iter(xrange, yrange)
 	for coords := range c {
-		x := coords[0].(int)
-		y := coords[1].(int)
-		obj, err := g.GetObjectAtCoords(x, y)
+		cx := coords[0].(int)
+		cy := coords[1].(int)
+		// This check ensures the self is not in sense data.
+		if cx == x && cy == y {
+			continue
+		}
+		obj, err := g.GetObjectAtCoords(cx, cy)
 		if err != nil {
 			continue
 		}
 		objects = append(objects, obj)
 	}
+	fmt.Println(objects)
 	return objects
 }

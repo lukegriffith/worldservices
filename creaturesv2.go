@@ -31,14 +31,14 @@ func (b *NormalCreature) Fitness() float64 {
 	return fitness
 }
 
-func (b *NormalCreature) GetCoorsXY() (int, int) {
+func (b *NormalCreature) GetCoordsXY() (int, int) {
 	return b.X, b.Y
 }
 
 // Some how this determines sensory data for distance. It wasn't thought
 // much about.
 func (b *NormalCreature) Sense(objects []WorldObject) []float64 {
-	bX, bY := b.GetCoorsXY()
+	bX, bY := b.GetCoordsXY()
 	var xPlusNeuron, xMinusNeuron, yPlusNeuron, yMinusNeuron float64
 	for _, obj := range objects {
 		objX, objY := obj.GetCoordsXY()
@@ -71,32 +71,36 @@ func (b *NormalCreature) Process(g Grid) {
 
 	_, largestIndex := minMax(controlSequence)
 
-	if largestIndex == 0 {
-		_, err := g.GetObjectAtCoords(b.X+1, b.Y)
-		if err != nil && b.X+1 < g.Size {
-			b.X = b.X + 1
+	value := controlSequence[largestIndex]
+	// Added ability for a creature to stay still if no neuron fires above .50
+	if value > 0.5 {
+		if largestIndex == 0 {
+			_, err := g.GetObjectAtCoords(b.X+1, b.Y)
+			if err != nil && b.X+1 < g.Size {
+				b.X = b.X + 1
+			}
 		}
-	}
-	if largestIndex == 1 {
-		_, err := g.GetObjectAtCoords(b.X-1, b.Y)
+		if largestIndex == 1 {
+			_, err := g.GetObjectAtCoords(b.X-1, b.Y)
 
-		if err != nil && b.X-1 > 0 {
-			b.X = b.X - 1
+			if err != nil && b.X-1 > 0 {
+				b.X = b.X - 1
+			}
 		}
-	}
-	if largestIndex == 2 {
-		_, err := g.GetObjectAtCoords(b.X, b.Y+1)
-		if err != nil && b.Y+1 < g.Size {
-			b.Y = b.Y + 1
+		if largestIndex == 2 {
+			_, err := g.GetObjectAtCoords(b.X, b.Y+1)
+			if err != nil && b.Y+1 < g.Size {
+				b.Y = b.Y + 1
+			}
 		}
-	}
-	if largestIndex == 3 {
-		_, err := g.GetObjectAtCoords(b.X, b.Y-1)
-		if err != nil && b.Y-1 > 0 {
-			b.Y = b.Y - 1
+		if largestIndex == 3 {
+			_, err := g.GetObjectAtCoords(b.X, b.Y-1)
+			if err != nil && b.Y-1 > 0 {
+				b.Y = b.Y - 1
+			}
 		}
+		g.UpdateLocationsCoords()
 	}
-	g.UpdateLocationsCoords()
 }
 
 func NewNormalCreature(x int, y int) *NormalCreature {

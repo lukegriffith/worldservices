@@ -1,0 +1,2 @@
+- debugging why network output is always the same. 
+    - need to create tests for Grid.GetObjectSenseData to validate its working as expected. 

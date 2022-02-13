@@ -35,7 +35,7 @@ func NewWorld(size int, pop int) World {
 			_, exists = locations[formatCoords(x, y)]
 		}
 
-		creature := NewBasicCreature(x, y)
+		creature := NewNormalCreature(x, y)
 
 		locations[formatCoords(x, y)] = creature
 		creatures = append(creatures, creature)
