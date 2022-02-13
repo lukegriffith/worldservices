@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/url"
+	"strconv"
 )
 
 func getBoard(w http.ResponseWriter, r *http.Request) {
@@ -33,22 +35,18 @@ func cycleWorld(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-func getWorldSize(w http.ResponseWriter, r *http.Request) {
-	world, err := GetWorldSingleton()
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-	}
-	jsonResp, err := json.Marshal(world.Grid.Size)
-	if err != nil {
-		log.Fatalf("Error happened in JSON marshal. Err: %s", err)
-	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(jsonResp)
-}
-
 func resetWorld(w http.ResponseWriter, r *http.Request) {
-	world := NewWorld(100, 30)
+	var size int
+	m, _ := url.ParseQuery(r.URL.RawQuery)
+	size, err := strconv.Atoi(m["worldsize"][0])
+	if err != nil {
+		log.Println("unable to parse size")
+	}
+	pop, err := strconv.Atoi(m["pop"][0])
+	if err != nil {
+		log.Println("unable to parse pop")
+	}
+	world := NewWorld(size, pop)
 	WorldSingleton = &world
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
@@ -57,7 +55,6 @@ func resetWorld(w http.ResponseWriter, r *http.Request) {
 func SetupServer(port string, staticPath string) {
 	http.HandleFunc("/board", getBoard)
 	http.HandleFunc("/cycle", cycleWorld)
-	http.HandleFunc("/worldsize", getWorldSize)
 	http.HandleFunc("/reset", resetWorld)
 
 	fs := http.FileServer(http.Dir(staticPath))

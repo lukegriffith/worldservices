@@ -5,7 +5,5 @@ import (
 )
 
 func main() {
-	w := worldservices.NewWorld(100, 30)
-	worldservices.WorldSingleton = &w
 	worldservices.SetupServer("8080", "./frontend")
 }

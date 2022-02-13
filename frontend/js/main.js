@@ -1,9 +1,7 @@
-port = 8080
-url = 'http://localhost:' + port + '/'
-
 var creatures = []
 var paused = true
-
+var fps = 32
+var cycleNum
 
 function pause() {
     button = document.getElementById('pause')
@@ -17,50 +15,60 @@ function pause() {
     }
 }
 
+function updateCycleStatus(){
+    div = document.getElementById('cycle')
+    div.innerHTML = cycleNum
+}
+
 function cycle() {
-    fetch(url + 'cycle')
+    cycleNum++
+    updateCycleStatus()
+    fetch('cycle')
     refreshBoard()
 }
 
 function reset() {
-    fetch(url + 'reset')
+    cycleNum = 0
+    updateCycleStatus()
+    size = document.getElementById('size')
+    population = document.getElementById('pop')
+    fetch('reset?worldsize=' + size.value + '&pop=' + population.value)
     refreshBoard()
 }
 
-function refreshBoard() {
+function clearBoard() {
+    background(220, 75);
+}
 
+function refreshBoard() {
     function updateBoard(data) {
         creatures = data
-        console.log(creatures)
     }
-
-    fetch(url + 'board')
+    fetch('board')
     .then(response => response.json())
     .then(data => updateBoard(data));
 }
 
 
-function generateWorld() {
-    fetch(url + 'worldsize')
-    .then(response => response.json())
-    .then(data => createDivs(data));
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 function drawCreature(x, y) {
+    setTimeout(10)
     ellipse(x, y, 8, 8)
 }
 
 
 function setup() {
     createCanvas(800, 800);
-    frameRate(3);
+    frameRate(fps);
 }
 
 function draw() {           
     if (!paused){
         cycle()
     }                                                    
-
     background(220, 75);
     creatures.forEach(c => drawCreature(c.X, c.Y))
 }

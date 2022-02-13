@@ -13,6 +13,13 @@ var (
 		{[]float64{0.2, 0.74, 0.2, 0.4}, []float64{0.0, 1.0, 0.0, 0.0}},
 		{[]float64{0.32, 0.2, 0.1, 0.0}, []float64{1.0, 0.0, 0.0, 0.0}},
 	}
+
+	LeftOnlyTraining = training.Examples{
+		{[]float64{0.0, 0.1231, 0.84, 1.0}, []float64{0.0, 1.0, 0.0, 0.0}},
+		{[]float64{0.2, 0.1231, 0.9, 0.4}, []float64{0.0, 1.0, 0.0, 0.0}},
+		{[]float64{0.2, 0.74, 0.2, 0.4}, []float64{0.0, 1.0, 0.0, 0.0}},
+		{[]float64{0.32, 0.2, 0.1, 0.0}, []float64{0.0, 1.0, 0.0, 0.0}},
+	}
 )
 
 func createNetwork(inputs int, layout []int) *deep.Neural {
