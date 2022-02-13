@@ -107,7 +107,7 @@ func NewNormalCreature(x int, y int) *NormalCreature {
 	// Initial chromosones
 	// Cross over if bread
 	n := createNetwork(4, []int{2, 2, 4})
-	trainNetwork(n, BasicTraining)
+	trainNetwork(n, LeftOnlyTraining)
 	// Train network based on chromosones
 	return &NormalCreature{NewRandomStats(), x, y, n, nil}
 }
