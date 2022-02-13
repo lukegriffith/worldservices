@@ -104,6 +104,5 @@ func (g *Grid) GetObjectSenseData(x int, y int, vision int) []WorldObject {
 		}
 		objects = append(objects, obj)
 	}
-	fmt.Println(objects)
 	return objects
 }

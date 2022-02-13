@@ -64,7 +64,9 @@ func getCreatureAtCoords(w http.ResponseWriter, r *http.Request) {
 	}
 	Y, err := strconv.Atoi(m["Y"][0])
 	objects := world.Grid.GetObjectSenseData(X, Y, 20)
-	fmt.Println(objects, X, Y)
+	for _, obj := range objects {
+		obj.SetDebug()
+	}
 	jsonResp, err := json.Marshal(objects)
 	if err != nil {
 		log.Fatalf("Error happened in JSON marshal. Err: %s", err)

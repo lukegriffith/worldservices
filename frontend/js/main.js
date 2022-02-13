@@ -2,7 +2,7 @@ var creatures = []
 var paused = true
 var fps = 10
 var cycleNum
-var debugCreature 
+
 
 function pause() {
     button = document.getElementById('pause')
@@ -23,9 +23,6 @@ function updateCycleStatus(){
     div.innerHTML = cycleNum
 }
 
-function updateDebugCreature(value) {
-    debugCreature = value
-}
 
 function cycle() {
     cycleNum++
@@ -74,7 +71,6 @@ function updateConsole(creature){
 function getCreatures(x,y){
     function updateDebug(creature_data) {
         creature_data.forEach(c => console.log(c))
-        console.log("inner click")
     }
     console.log(x, y)
     fetch('creatures?X=' + x + '&Y=' + y)
@@ -85,18 +81,17 @@ function getCreatures(x,y){
 
 function drawCreature(x, y, i, a) {
     setTimeout(10)
-    if (i == debugCreature) {
-        updateConsole(a[i])
+
+    if (a[i].Debug) {
         let c = color('red')
         fill(c)
-    } 
+    }
     ellipse(x, y, 8, 8)
     let c = color('white')
     fill(c)
 }
 
 function canvasClickHandler() {
-    console.log("click")
     getCreatures(int(mouseX), int(mouseY))
     draw()
 }

@@ -17,7 +17,8 @@ func GetWorldSingleton() (*World, error) {
 }
 
 type World struct {
-	Grid Grid
+	Grid    Grid
+	cycleNo int
 }
 
 func NewWorld(size int, pop int) World {
@@ -40,13 +41,18 @@ func NewWorld(size int, pop int) World {
 		locations[formatCoords(x, y)] = creature
 		creatures = append(creatures, creature)
 	}
-	return World{Grid{creatures, locations, size}}
+	return World{Grid{creatures, locations, size}, 0}
+}
+
+func (w *World) Oscilator() float64 {
+	return float64(w.cycleNo % 10 / 10)
 }
 
 func (w *World) Cycle() {
 	objects := w.Grid.GetOrderedObjectListByFitness()
 	for _, o := range objects {
-		o.Process(w.Grid)
+		o.Process(w.Grid, w.Oscilator())
 	}
 	w.Grid.UpdateLocationsCoords()
+	w.cycleNo = w.cycleNo + 1
 }

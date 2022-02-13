@@ -9,7 +9,8 @@ import (
 type WorldObject interface {
 	Fitness() float64
 	GetCoordsXY() (int, int)
-	Process(Grid)
+	Process(Grid, float64)
+	SetDebug()
 }
 
 type Stats struct {

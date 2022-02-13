@@ -1,2 +1,5 @@
-- debugging why network output is always the same. 
-    - need to create tests for Grid.GetObjectSenseData to validate its working as expected. 
+- [x] debugging why network output is always the same. 
+    - [x] need to create tests for Grid.GetObjectSenseData to validate its working as expected. 
+- [] ADD AN OSCILATION (Implemented, needs testing)
+- [] Add ID's to creatures to enable recall from array so debug index can be set correctly when clicked.
+- [] Add a different speed in stats and move further distance with it. 

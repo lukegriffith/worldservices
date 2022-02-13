@@ -8,13 +8,9 @@ import (
 
 func updateDistanceNeuronV2(distance float64, neuron *float64) {
 	absDist := math.Abs(distance)
-	if absDist == 1 {
-		*neuron = 1.0
-	} else {
-		n1 := 1 - absDist/10
-		if n1 > *neuron {
-			*neuron = n1
-		}
+
+	if distance > *neuron {
+		*neuron = absDist
 	}
 }
 
@@ -23,6 +19,8 @@ type NormalCreature struct {
 	X, Y                int
 	net                 *deep.Neural
 	LastControlSequence []float64
+	LastInputNeurons    []float64
+	Debug               bool
 }
 
 func (b *NormalCreature) Fitness() float64 {
@@ -37,7 +35,7 @@ func (b *NormalCreature) GetCoordsXY() (int, int) {
 
 // Some how this determines sensory data for distance. It wasn't thought
 // much about.
-func (b *NormalCreature) Sense(objects []WorldObject) []float64 {
+func (b *NormalCreature) Sense(objects []WorldObject, oscilator float64) []float64 {
 	bX, bY := b.GetCoordsXY()
 	var xPlusNeuron, xMinusNeuron, yPlusNeuron, yMinusNeuron float64
 	for _, obj := range objects {
@@ -56,18 +54,19 @@ func (b *NormalCreature) Sense(objects []WorldObject) []float64 {
 		} else {
 			updateDistanceNeuronV2(ydistance, &yMinusNeuron)
 		}
-
 	}
-	return []float64{xPlusNeuron, xMinusNeuron, yPlusNeuron, yMinusNeuron}
+	return []float64{xPlusNeuron, xMinusNeuron, yPlusNeuron, yMinusNeuron, oscilator}
 }
 
-func (b *NormalCreature) Process(g Grid) {
+func (b *NormalCreature) Process(g Grid, oscilator float64) {
 	// board input.
 	// build inputs from grid and creature
 	sensedObjects := g.GetObjectSenseData(b.X, b.Y, b.S.Focus)
-	neuralInput := b.Sense(sensedObjects)
+	neuralInput := b.Sense(sensedObjects, oscilator)
 	controlSequence := b.net.Predict(neuralInput)
 	b.LastControlSequence = controlSequence
+	b.LastInputNeurons = neuralInput
+	b.S.Age = b.S.Age + 1
 
 	_, largestIndex := minMax(controlSequence)
 
@@ -103,11 +102,15 @@ func (b *NormalCreature) Process(g Grid) {
 	}
 }
 
+func (b *NormalCreature) SetDebug() {
+	b.Debug = !b.Debug
+}
+
 func NewNormalCreature(x int, y int) *NormalCreature {
 	// Initial chromosones
 	// Cross over if bread
-	n := createNetwork(4, []int{2, 2, 4})
-	trainNetwork(n, LeftOnlyTraining)
+	n := createNetwork(5, []int{2, 2, 4})
+	trainNetwork(n, BasicTrainingWOscilation)
 	// Train network based on chromosones
-	return &NormalCreature{NewRandomStats(), x, y, n, nil}
+	return &NormalCreature{NewRandomStats(), x, y, n, nil, nil, false}
 }
