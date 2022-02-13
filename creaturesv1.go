@@ -17,14 +17,14 @@ func (b *BasicCreature) Fitness() float64 {
 	return fitness
 }
 
-func (b *BasicCreature) GetCoorsXY() (int, int) {
+func (b *BasicCreature) GetCoordsXY() (int, int) {
 	return b.X, b.Y
 }
 
 // Some how this determines sensory data for distance. It wasn't thought
 // much about.
 func (b *BasicCreature) Sense(objects []WorldObject) []float64 {
-	bX, bY := b.GetCoorsXY()
+	bX, bY := b.GetCoordsXY()
 	var xPlusNeuron, xMinusNeuron, yPlusNeuron, yMinusNeuron float64
 	for _, obj := range objects {
 		objX, objY := obj.GetCoordsXY()
