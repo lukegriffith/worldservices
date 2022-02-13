@@ -1,6 +1,6 @@
 var creatures = []
 var paused = true
-var fps = 32
+var fps = 10
 var cycleNum
 var debugCreature 
 
@@ -9,10 +9,12 @@ function pause() {
     if (paused) {
         button.value = "pause"
         paused = false
+        loop()
     }
     else {
         button.value = "start"
         paused = true
+        noLoop()
     }
 }
 
