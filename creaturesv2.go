@@ -27,9 +27,7 @@ func (b *NormalCreature) GetCoordsXY() (int, int) {
 
 func updateDistanceNeuronV2(distance float64, neuron *float64) {
 	absDist := math.Abs(distance)
-	if distance > *neuron {
-		*neuron = absDist
-	}
+	*neuron = absDist + *neuron
 }
 
 // Some how this determines sensory data for distance. It wasn't thought

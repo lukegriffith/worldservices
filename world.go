@@ -45,7 +45,7 @@ func NewWorld(size int, pop int) World {
 }
 
 func (w *World) Oscilator() float64 {
-	return float64(w.cycleNo % 10 / 10)
+	return float64(w.cycleNo%10) / 10
 }
 
 func (w *World) Cycle() {
