@@ -1,8 +1,22 @@
 package worldservices
 
 import (
+	"math"
+
 	"github.com/patrikeh/go-deep"
 )
+
+func updateDistanceNeuronV2(distance float64, neuron *float64) {
+	absDist := math.Abs(distance)
+	if absDist == 1 {
+		*neuron = 1.0
+	} else {
+		n1 := 1 - absDist/10
+		if n1 > *neuron {
+			*neuron = n1
+		}
+	}
+}
 
 type NormalCreature struct {
 	S                   Stats
@@ -27,20 +41,20 @@ func (b *NormalCreature) Sense(objects []WorldObject) []float64 {
 	bX, bY := b.GetCoorsXY()
 	var xPlusNeuron, xMinusNeuron, yPlusNeuron, yMinusNeuron float64
 	for _, obj := range objects {
-		objX, objY := obj.GetCoorsXY()
+		objX, objY := obj.GetCoordsXY()
 		xdistance := float64(objX - bX)
 		ydistance := float64(objY - bY)
 
 		if xdistance > 0 {
-			updateDistanceNeuron(xdistance, &xPlusNeuron)
+			updateDistanceNeuronV2(xdistance, &xPlusNeuron)
 		} else {
-			updateDistanceNeuron(xdistance, &xMinusNeuron)
+			updateDistanceNeuronV2(xdistance, &xMinusNeuron)
 		}
 
 		if ydistance > 0 {
-			updateDistanceNeuron(ydistance, &yPlusNeuron)
+			updateDistanceNeuronV2(ydistance, &yPlusNeuron)
 		} else {
-			updateDistanceNeuron(ydistance, &yMinusNeuron)
+			updateDistanceNeuronV2(ydistance, &yMinusNeuron)
 		}
 
 	}

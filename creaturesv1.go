@@ -27,7 +27,7 @@ func (b *BasicCreature) Sense(objects []WorldObject) []float64 {
 	bX, bY := b.GetCoorsXY()
 	var xPlusNeuron, xMinusNeuron, yPlusNeuron, yMinusNeuron float64
 	for _, obj := range objects {
-		objX, objY := obj.GetCoorsXY()
+		objX, objY := obj.GetCoordsXY()
 		xdistance := float64(objX - bX)
 		ydistance := float64(objY - bY)
 

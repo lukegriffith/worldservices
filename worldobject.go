@@ -8,7 +8,7 @@ import (
 
 type WorldObject interface {
 	Fitness() float64
-	GetCoorsXY() (int, int)
+	GetCoordsXY() (int, int)
 	Process(Grid)
 }
 

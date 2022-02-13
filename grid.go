@@ -57,7 +57,7 @@ func (g *Grid) UpdateLocationsCoords() {
 	objects := g.GetOrderedObjectListByFitness()
 	for i, j := 0, len(objects)-1; i < j; i, j = i+1, j-2 {
 		obj := objects[i]
-		x, y := obj.GetCoorsXY()
+		x, y := obj.GetCoordsXY()
 		locations[formatCoords(x, y)] = obj
 	}
 	g.locations = locations
