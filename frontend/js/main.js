@@ -38,7 +38,13 @@ function reset() {
     size = document.getElementById('size')
     population = document.getElementById('pop')
     fetch('reset?worldsize=' + size.value + '&pop=' + population.value)
-    refreshBoard()
+    // remove canvas
+    world_section = document.getElementById("world")
+    world_section.innerHTML = ""
+    if (! paused) {
+        pause()
+    }
+    setup()
 }
 
 function clearBoard() {
@@ -94,7 +100,8 @@ function canvasClickHandler() {
 }
 
 function setup() {
-    cnv = createCanvas(800, 800);
+    size = document.getElementById('size').value
+    cnv = createCanvas(size, size);
     cnv.mouseClicked(canvasClickHandler)
     frameRate(fps);
 }
@@ -111,5 +118,5 @@ function draw() {
     creatures.forEach(function callback(c, i, a) { 
         drawCreature(c.X, c.Y, i, a)      
     });
-    setTimeout(100)
+    setTimeout(1000)
 }
