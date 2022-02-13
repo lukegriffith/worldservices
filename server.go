@@ -63,7 +63,7 @@ func getCreatureAtCoords(w http.ResponseWriter, r *http.Request) {
 		log.Println("unable to parse x")
 	}
 	Y, err := strconv.Atoi(m["Y"][0])
-	objects := world.Grid.GetObjectSenseData(X, Y, 12)
+	objects := world.Grid.GetObjectSenseData(X, Y, 20)
 	fmt.Println(objects, X, Y)
 	jsonResp, err := json.Marshal(objects)
 	if err != nil {
