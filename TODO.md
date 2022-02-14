@@ -9,3 +9,4 @@
 - [ ] Evolutionary experiments 
     - Ability to select what ones can breed and spread behaviours. 
         - Spike: can I acces / change weights of the network.
+- [ ] Rename package to creatureServices
