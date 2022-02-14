@@ -9,15 +9,14 @@ import (
 type NormalCreature struct {
 	S                   Stats
 	X, Y                int
-	net                 *deep.Neural
+	Net                 *deep.Neural
 	LastControlSequence []float64
 	LastInputNeurons    []float64
 	Debug               bool
 }
 
 func (b *NormalCreature) Fitness() float64 {
-	var fitness float64
-	fitness = float64((b.S.Health * b.S.Speed) - b.S.Age)
+	fitness := float64((b.S.Health * b.S.Speed) - b.S.Age)
 	return fitness
 }
 
@@ -61,7 +60,7 @@ func (b *NormalCreature) Process(g Grid, oscilator float64) {
 	// build inputs from grid and creature
 	sensedObjects := g.GetObjectSenseData(b.X, b.Y, b.S.Focus)
 	neuralInput := b.Sense(sensedObjects, oscilator, float64(b.S.Age))
-	controlSequence := b.net.Predict(neuralInput)
+	controlSequence := b.Net.Predict(neuralInput)
 	b.LastControlSequence = controlSequence
 	b.LastInputNeurons = neuralInput
 	b.S.Age = b.S.Age + 1
