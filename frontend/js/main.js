@@ -87,7 +87,9 @@ function getCreatures(x,y){
     console.log(x, y)
     fetch('creatures?X=' + x + '&Y=' + y)
     .then(response => response.json())
-    .then(data => updateDebug(data));
+    .then(data => updateDebug(data))
+    .then(r => setTimeout(next(), 100))
+
 }
 
 
@@ -117,6 +119,10 @@ function setup() {
 
 function next() {
     cycle()
+    background(220, 75);
+    creatures.forEach(function callback(c, i, a) { 
+        drawCreature(c.X, c.Y, i, a)      
+    });
 }
 
 function draw() {           
@@ -127,5 +133,4 @@ function draw() {
     creatures.forEach(function callback(c, i, a) { 
         drawCreature(c.X, c.Y, i, a)      
     });
-    setTimeout(1000)
 }
