@@ -24,12 +24,28 @@ function updateCycleStatus(){
 }
 
 
+
+
 function cycle() {
-    cycleNum++
+    if (!paused){
+        cycleNum++
+        updateCycleStatus()
+        fetch('cycle')
+        refreshBoard()
+    }       
+
+}
+
+function next() {
     updateCycleStatus()
     fetch('cycle')
     refreshBoard()
+    background(220, 75);
+    creatures.forEach(function callback(c, i, a) { 
+        drawCreature(c.X, c.Y, i, a)      
+    });
 }
+
 
 function resetCanvas() {
     // remove canvas
@@ -117,20 +133,14 @@ function setup() {
     frameRate(fps);
 }
 
-function next() {
-    cycle()
+
+function draw() {           
+                                             
     background(220, 75);
     creatures.forEach(function callback(c, i, a) { 
         drawCreature(c.X, c.Y, i, a)      
     });
 }
 
-function draw() {           
-    if (!paused){
-        cycle()
-    }                                                    
-    background(220, 75);
-    creatures.forEach(function callback(c, i, a) { 
-        drawCreature(c.X, c.Y, i, a)      
-    });
-}
+// server sync every 250ms.
+setInterval(cycle, 250)

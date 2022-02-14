@@ -1,0 +1,9 @@
+Data transfered with neural net exposed
+250ms cycle time
+pop 300 
+60 seconds, 260mb
+
+Data transfered without neural net exposed
+250ms cycle time
+pop 300
+60 seconds, 17mb 

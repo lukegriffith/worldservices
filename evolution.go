@@ -7,8 +7,8 @@ import "github.com/patrikeh/go-deep"
 // X & Y is new creature location
 func CrossoverCreatures(c1 *NormalCreature, c2 *NormalCreature, X int, Y int) NormalCreature {
 
-	n1 := c1.Net
-	n2 := c2.Net
+	n1 := c1.GetBrain()
+	n2 := c2.GetBrain()
 	// Could also do every other layer interlaced.
 
 	crossoverPoint := randomNumber(0, len(n1.Layers))
@@ -21,17 +21,18 @@ func CrossoverCreatures(c1 *NormalCreature, c2 *NormalCreature, X int, Y int) No
 	b3 := append(b1, b2...)
 
 	c3gen2 := NormalCreature{
-		S: NewRandomStats(),
-		X: X,
-		Y: Y,
-		Net: &deep.Neural{
-			Layers: l3,
-			Biases: b3,
-			Config: n2.Config,
-		},
+		S:                   NewRandomStats(),
+		X:                   X,
+		Y:                   Y,
 		LastControlSequence: nil,
 		LastInputNeurons:    nil,
 		Debug:               false,
 	}
+	brain := &deep.Neural{
+		Layers: l3,
+		Biases: b3,
+		Config: n2.Config,
+	}
+	c3gen2.SetBrain(brain)
 	return c3gen2
 }
