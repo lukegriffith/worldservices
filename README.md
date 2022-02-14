@@ -2,6 +2,12 @@
 
 a creature simulation. 
 
+
+```
+go run cmd/worldtest/main.go
+# navigate to https://localhost:8080 in browser
+```
+
 # training sets 
 
 Use training sets as chromosones. The model gets trained on the packages in the chromosones. They propogate through matching. i.e. see neural.go line 37. Treat as a training pack and have different ones represent a chromosone. 
