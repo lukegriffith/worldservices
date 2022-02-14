@@ -32,7 +32,7 @@ func updateDistanceNeuronV2(distance float64, neuron *float64) {
 
 // Some how this determines sensory data for distance. It wasn't thought
 // much about.
-func (b *NormalCreature) Sense(objects []WorldObject, oscilator float64) []float64 {
+func (b *NormalCreature) Sense(objects []WorldObject, oscilator float64, age float64) []float64 {
 
 	bX, bY := b.GetCoordsXY()
 	var xPlusNeuron, xMinusNeuron, yPlusNeuron, yMinusNeuron float64
@@ -53,14 +53,14 @@ func (b *NormalCreature) Sense(objects []WorldObject, oscilator float64) []float
 			updateDistanceNeuronV2(ydistance, &yMinusNeuron)
 		}
 	}
-	return []float64{xPlusNeuron, xMinusNeuron, yPlusNeuron, yMinusNeuron, oscilator}
+	return []float64{xPlusNeuron, xMinusNeuron, yPlusNeuron, yMinusNeuron, oscilator, age}
 }
 
 func (b *NormalCreature) Process(g Grid, oscilator float64) {
 	// board input.
 	// build inputs from grid and creature
 	sensedObjects := g.GetObjectSenseData(b.X, b.Y, b.S.Focus)
-	neuralInput := b.Sense(sensedObjects, oscilator)
+	neuralInput := b.Sense(sensedObjects, oscilator, float64(b.S.Age))
 	controlSequence := b.net.Predict(neuralInput)
 	b.LastControlSequence = controlSequence
 	b.LastInputNeurons = neuralInput
@@ -70,7 +70,7 @@ func (b *NormalCreature) Process(g Grid, oscilator float64) {
 
 	value := controlSequence[largestIndex]
 	// Added ability for a creature to stay still if no neuron fires above .50
-	if value > 0.5 {
+	if value > 0.3 {
 		if largestIndex == 0 {
 			_, err := g.GetObjectAtCoords(b.X+1, b.Y)
 			if err != nil && b.X+1 < g.Size {
@@ -107,8 +107,8 @@ func (b *NormalCreature) SetDebug() {
 func NewNormalCreature(x int, y int) *NormalCreature {
 	// Initial chromosones
 	// Cross over if bread
-	n := createNetwork(5, []int{2, 2, 4})
-	trainNetwork(n, BasicTrainingWOscilation)
+	n := createNetwork(6, []int{2, 2, 4})
+	trainNetwork(n, BasicTrainingWOscilationAndAge)
 	// Train network based on chromosones
 	return &NormalCreature{NewRandomStats(), x, y, n, nil, nil, false}
 }
