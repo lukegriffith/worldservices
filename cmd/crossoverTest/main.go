@@ -14,7 +14,7 @@ func main() {
 
 	b1 := c1.Net
 	b2 := c2.Net
-
+	// Could also do every other layer interlaced.
 	l1 := b1.Layers[0 : len(b1.Layers)/2]
 	l2 := b2.Layers[len(b2.Layers)/2 : len(b2.Layers)]
 
