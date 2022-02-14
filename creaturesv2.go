@@ -70,34 +70,38 @@ func (b *NormalCreature) Process(g Grid, oscilator float64) {
 
 	value := controlSequence[largestIndex]
 	// Added ability for a creature to stay still if no neuron fires above .50
-	if value > 0.3 {
-		if largestIndex == 0 {
-			_, err := g.GetObjectAtCoords(b.X+1, b.Y)
-			if err != nil && b.X+1 < g.Size {
-				b.X = b.X + 1
-			}
+	stride := int(float64(b.S.Speed) * value)
+	if largestIndex == 0 {
+		newX := b.X + stride
+		_, err := g.GetObjectAtCoords(newX, b.Y)
+		if err != nil && newX < g.Size {
+			b.X = newX
 		}
-		if largestIndex == 1 {
-			_, err := g.GetObjectAtCoords(b.X-1, b.Y)
-
-			if err != nil && b.X-1 > 0 {
-				b.X = b.X - 1
-			}
-		}
-		if largestIndex == 2 {
-			_, err := g.GetObjectAtCoords(b.X, b.Y+1)
-			if err != nil && b.Y+1 < g.Size {
-				b.Y = b.Y + 1
-			}
-		}
-		if largestIndex == 3 {
-			_, err := g.GetObjectAtCoords(b.X, b.Y-1)
-			if err != nil && b.Y-1 > 0 {
-				b.Y = b.Y - 1
-			}
-		}
-		g.UpdateLocationsCoords()
 	}
+	if largestIndex == 1 {
+		newX := b.X - stride
+		_, err := g.GetObjectAtCoords(newX, b.Y)
+
+		if err != nil && newX > 0 {
+			b.X = newX
+		}
+	}
+	if largestIndex == 2 {
+		newY := b.Y + stride
+		_, err := g.GetObjectAtCoords(b.X, newY)
+		if err != nil && newY < g.Size {
+			b.Y = newY
+		}
+	}
+	if largestIndex == 3 {
+		newY := b.Y - stride
+		_, err := g.GetObjectAtCoords(newY, b.Y-1)
+		if err != nil && newY > 0 {
+			b.Y = newY
+		}
+	}
+	g.UpdateLocationsCoords()
+
 }
 
 func (b *NormalCreature) SetDebug() {

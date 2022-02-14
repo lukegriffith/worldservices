@@ -1,6 +1,8 @@
 - [x] debugging why network output is always the same. 
     - [x] need to create tests for Grid.GetObjectSenseData to validate its working as expected. 
-- [] ADD AN OSCILATION (Implemented, needs testing)
-- [] Add ID's to creatures to enable recall from array so debug index can be set correctly when clicked.
-- [] Add a different speed in stats and move further distance with it. 
-- [] !!!! Make sense a neural network its self too.
+- [x] ADD AN OSCILATION (Implemented, needs testing)
+- ~~[ ] Add ID's to creatures to enable recall from array so debug index can be set correctly when clicked.~~
+- [X] Add a different speed in stats and move further distance with it. 
+- [ ] Pre-Compute a certain amount of steps per simulation, and have the server export each frame of each cycle. 
+    - This moves from having the javascript client call cylce, and having the server get overwhealemd with the requests.
+    - Client will be consuming pre-computed simulations, that are pre-made in advance. 

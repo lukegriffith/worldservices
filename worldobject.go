@@ -32,7 +32,7 @@ func NewRandomStats() Stats {
 		randomNumber(60, 100),
 		randomNumber(1, 10),
 		randomNumber(10, 25),
-		randomNumber(1, 10),
+		randomNumber(1, 6),
 		randomNumber(0, 80),
 	}
 }
