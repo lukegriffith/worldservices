@@ -6,7 +6,9 @@ import (
 )
 
 var (
-	// DEFINE A BASIC TRAINING NETWORK TO MOVE CREATURES
+	// THESE EXAMPLES ARE NOW DEFUNCT WE'RE GOING TO EVOLUTIONARY ROUTE.
+	// A RANDOMLY GENERATED NETWORK HAS MORE VARIED MOVEMENT AND IS
+	// A MORE INTERESTING EXPERIMENT FOR EVOLUTION.
 	BasicTraining = training.Examples{
 		{[]float64{0.0, 0.1231, 0.84, 1.0}, []float64{1.0, 0.0, 0.0, 0.0}},
 		{[]float64{0.2, 0.9, 0.9, 0.4}, []float64{1.0, 0.0, 0.0, 0.0}},
@@ -65,6 +67,7 @@ func createNetwork(inputs int, layout []int) *deep.Neural {
 	})
 }
 
+// Prints stuff to terminal :[
 func trainNetwork(n *deep.Neural, data training.Examples) {
 	// params: learning rate, momentum, alpha decay, nesterov
 	optimizer := training.NewSGD(0.05, 0.1, 1e-6, true)

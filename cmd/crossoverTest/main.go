@@ -15,8 +15,9 @@ func main() {
 	b1 := c1.Net
 	b2 := c2.Net
 	// Could also do every other layer interlaced.
-	l1 := b1.Layers[0 : len(b1.Layers)/2]
-	l2 := b2.Layers[len(b2.Layers)/2 : len(b2.Layers)]
+	crossoverPoint := len(b1.Layers) / 2
+	l1 := b1.Layers[:len(b1.Layers)/crossoverPoint]
+	l2 := b2.Layers[len(b2.Layers)/crossoverPoint:]
 
 	l3 := append(l1, l2...)
 
@@ -35,4 +36,11 @@ func main() {
 	}
 	objects := []worldservices.WorldObject{c1, c2}
 	fmt.Println(c3gen2.Sense(objects, 1.0, 1.0))
+
+	fmt.Println(len(c1.Net.Biases))
+	fmt.Println(len(c1.Net.Layers))
+
+	c := []int{1, 2, 3, 4, 5}
+	fmt.Println(c[:len(c)/2])
+	fmt.Println(c[len(c)/2:])
 }

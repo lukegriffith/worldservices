@@ -19,7 +19,7 @@ func TestCreatureSense(t *testing.T) {
 	}
 	nc := obj.(*worldservices.NormalCreature)
 	sensed := g.GetObjectSenseData(3, 3, 3)
-	neuronOutput := nc.Sense(sensed, 0.9)
+	neuronOutput := nc.Sense(sensed, 0.9, 1.0)
 
 	t.Log(neuronOutput)
 }

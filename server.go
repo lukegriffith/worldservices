@@ -52,6 +52,14 @@ func resetWorld(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+func breedWorld(w http.ResponseWriter, r *http.Request) {
+	world, err := GetWorldSingleton()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	WorldSingleton = world.NewWorldFromDebug()
+}
+
 func getCreatureAtCoords(w http.ResponseWriter, r *http.Request) {
 	world, err := GetWorldSingleton()
 	if err != nil {
@@ -81,6 +89,7 @@ func SetupServer(port string, staticPath string) {
 	http.HandleFunc("/cycle", cycleWorld)
 	http.HandleFunc("/reset", resetWorld)
 	http.HandleFunc("/creatures", getCreatureAtCoords)
+	http.HandleFunc("/breed", breedWorld)
 
 	fs := http.FileServer(http.Dir(staticPath))
 	http.Handle("/", fs)

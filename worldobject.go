@@ -29,12 +29,19 @@ func randomNumber(min int, max int) int {
 
 func NewRandomStats() Stats {
 	return Stats{
-		randomNumber(60, 100),
-		randomNumber(1, 10),
-		randomNumber(10, 25),
-		randomNumber(1, 6),
-		randomNumber(0, 80),
-	}
+		10,
+		10,
+		10,
+		2,
+		40,
+	} /*
+		return Stats{
+			randomNumber(60, 100),
+			randomNumber(1, 10),
+			randomNumber(10, 25),
+			randomNumber(1, 6),
+			randomNumber(0, 80),
+		}*/
 }
 
 func updateDistanceNeuron(distance float64, neuron *float64) {

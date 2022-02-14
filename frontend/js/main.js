@@ -31,19 +31,31 @@ function cycle() {
     refreshBoard()
 }
 
-function reset() {
-    cycleNum = 0
-    updateCycleStatus()
-    size = document.getElementById('size')
-    population = document.getElementById('pop')
-    fetch('reset?worldsize=' + size.value + '&pop=' + population.value)
+function resetCanvas() {
     // remove canvas
+    cycleNum = 0
     world_section = document.getElementById("world")
     world_section.innerHTML = ""
     if (! paused) {
         pause()
     }
     setup()
+}
+
+function reset() {
+    updateCycleStatus()
+    size = document.getElementById('size')
+    population = document.getElementById('pop')
+    fetch('reset?worldsize=' + size.value + '&pop=' + population.value)
+    resetCanvas()
+}
+
+function breed() {
+    function updateWorld(data) {
+
+    }
+    fetch('breed')
+    .then(response => resetCanvas())
 }
 
 function clearBoard() {
