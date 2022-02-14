@@ -6,3 +6,6 @@
 - [ ] Pre-Compute a certain amount of steps per simulation, and have the server export each frame of each cycle. 
     - This moves from having the javascript client call cylce, and having the server get overwhealemd with the requests.
     - Client will be consuming pre-computed simulations, that are pre-made in advance. 
+- [ ] Evolutionary experiments 
+    - Ability to select what ones can breed and spread behaviours. 
+        - Spike: can I acces / change weights of the network.
