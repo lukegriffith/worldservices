@@ -28,18 +28,20 @@ function updateCycleStatus(){
 
 function cycle() {
     if (!paused){
-        cycleNum++
-        updateCycleStatus()
-        fetch('cycle')
-        refreshBoard()
+        realCycle()
     }       
 
 }
 
-function next() {
+function realCycle() {
+    cycleNum++
     updateCycleStatus()
     fetch('cycle')
     refreshBoard()
+}
+
+function next() {
+    realCycle()
     background(220, 75);
     creatures.forEach(function callback(c, i, a) { 
         drawCreature(c.X, c.Y, i, a)      
@@ -82,7 +84,7 @@ function refreshBoard() {
     function updateBoard(data) {
         creatures = data
     }
-    fetch('board')
+    return fetch('board')
     .then(response => response.json())
     .then(data => updateBoard(data));
 }
@@ -104,7 +106,8 @@ function getCreatures(x,y){
     fetch('creatures?X=' + x + '&Y=' + y)
     .then(response => response.json())
     .then(data => updateDebug(data))
-    .then(r => setTimeout(next(), 100))
+    .then(r => setTimeout(refreshBoard, 250))
+    .then(r => setTimeout(renderGrid, 500))
 
 }
 
@@ -123,7 +126,7 @@ function drawCreature(x, y, i, a) {
 
 function canvasClickHandler() {
     getCreatures(int(mouseX), int(mouseY))
-    draw()
+    
 }
 
 function setup() {
@@ -135,7 +138,12 @@ function setup() {
 
 
 function draw() {           
-                                             
+    if (!paused){                                
+        renderGrid()
+    }
+}
+
+function renderGrid() {
     background(220, 75);
     creatures.forEach(function callback(c, i, a) { 
         drawCreature(c.X, c.Y, i, a)      
@@ -143,4 +151,4 @@ function draw() {
 }
 
 // server sync every 250ms.
-setInterval(cycle, 250)
+setInterval(cycle, 100)
