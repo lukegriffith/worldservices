@@ -13,3 +13,12 @@
             Yes you can. See cmd/crossoerverTest
 - [ ] Rename package to creatureServices
 - [X] Rate limit cycle calls, calling server sync every 250ms
+
+
+- Split the world and simulation out
+    - Have a world registry where new configurations can be added.
+    - Have the simulation be replayable
+- Expand breeding
+    - Enable breeding the fittest of two or more worlds. 
+- Fitness parameters
+    - Create a system to create survival zones, instead of debug to choose the fittest.

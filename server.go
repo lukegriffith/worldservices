@@ -9,13 +9,25 @@ import (
 	"strconv"
 )
 
+func findGrid(keyName string, r *http.Request) (Grid, error) {
+	m, _ := url.ParseQuery(r.URL.RawQuery)
+	worldName := m[keyName][0]
+	cycle, err := strconv.Atoi(m["cycle"][0])
+	if err != nil {
+		return Grid{}, err
+	}
+	return GetWorldBoard(worldName, cycle), nil
+}
+
 func getBoard(w http.ResponseWriter, r *http.Request) {
-	world, err := GetWorldSingleton()
+	// TODO make world singleton a service with parameters recieved.
+	// have that find the world, and cycle number of the board.
+	grid, err := findGrid("world", r)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 
-	objects := world.Grid.GetOrderedObjectListByFitness()
+	objects := grid.GetOrderedObjectListByFitness()
 	jsonResp, err := json.Marshal(objects)
 	if err != nil {
 		log.Fatalf("Error happened in JSON marshal. Err: %s", err)
@@ -23,16 +35,6 @@ func getBoard(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(jsonResp)
-}
-
-func cycleWorld(w http.ResponseWriter, r *http.Request) {
-	world, err := GetWorldSingleton()
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-	}
-	world.Cycle()
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
 }
 
 func resetWorld(w http.ResponseWriter, r *http.Request) {
@@ -53,15 +55,20 @@ func resetWorld(w http.ResponseWriter, r *http.Request) {
 }
 
 func breedWorld(w http.ResponseWriter, r *http.Request) {
-	world, err := GetWorldSingleton()
+	grid1, err := findGrid("world1", r)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
+	grid2, err := findGrid("world2", r)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	// TODO
 	WorldSingleton = world.NewWorldFromDebug()
 }
 
 func getCreatureAtCoords(w http.ResponseWriter, r *http.Request) {
-	world, err := GetWorldSingleton()
+	grid := findGrid(r)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
@@ -71,7 +78,7 @@ func getCreatureAtCoords(w http.ResponseWriter, r *http.Request) {
 		log.Println("unable to parse x")
 	}
 	Y, err := strconv.Atoi(m["Y"][0])
-	objects := world.Grid.GetObjectSenseData(X, Y, 20)
+	objects := grid.GetObjectSenseData(X, Y, 20)
 	for _, obj := range objects {
 		obj.SetDebug()
 	}

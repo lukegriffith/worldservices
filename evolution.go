@@ -2,10 +2,12 @@ package worldservices
 
 import "github.com/patrikeh/go-deep"
 
+// TODO: Need to implement crossover.
 // crossover point
 // select a random crossover point (range 0, len(Net.Layers))
 // X & Y is new creature location
-func CrossoverCreatures(c1 *NormalCreature, c2 *NormalCreature, X int, Y int) NormalCreature {
+// returned int is crossover point.
+func CrossoverCreatures(c1 *NormalCreature, c2 *NormalCreature, X int, Y int) (NormalCreature, int) {
 
 	n1 := c1.GetBrain()
 	n2 := c2.GetBrain()
@@ -34,5 +36,5 @@ func CrossoverCreatures(c1 *NormalCreature, c2 *NormalCreature, X int, Y int) No
 		Config: n2.Config,
 	}
 	c3gen2.SetBrain(brain)
-	return c3gen2
+	return c3gen2, crossoverPoint
 }

@@ -1,24 +1,13 @@
 package worldservices
 
 import (
-	"errors"
 	"time"
 )
-
-var (
-	WorldSingleton *World
-)
-
-func GetWorldSingleton() (*World, error) {
-	if WorldSingleton != nil {
-		return WorldSingleton, nil
-	}
-	return nil, errors.New("Singleton not set.")
-}
 
 type World struct {
 	Grid    Grid
 	cycleNo int
+	History WorldHistory
 }
 
 func generateSafeLocation(locations map[string]WorldObject, size int) (int, int) {
@@ -54,6 +43,7 @@ func (w *World) Oscilator() float64 {
 }
 
 func (w *World) Cycle() {
+	w.History.Push(w.Grid)
 	objects := w.Grid.GetOrderedObjectListByFitness()
 	for _, o := range objects {
 		o.Process(w.Grid, w.Oscilator())
@@ -65,8 +55,8 @@ func (w *World) Cycle() {
 // NewWorldFromDebug
 // creates a new world from the creatures in debug mode
 // using the crossover function.
-func (w *World) NewWorldFromDebug() *World {
-
+func NewWorldFromDebug(world string) *World {
+	w := GetWorld(world)
 	nextGeneration := []WorldObject{}
 	debuggedObjects := []WorldObject{}
 	objects := w.Grid.GetOrderedObjectListByFitness()
@@ -84,7 +74,7 @@ func (w *World) NewWorldFromDebug() *World {
 		c2 := debuggedObjects[0].(*NormalCreature)
 		debuggedObjects = debuggedObjects[1:]
 		X, Y := generateSafeLocation(locations, w.Grid.Size)
-		c3gen2 := CrossoverCreatures(c1, c2, X, Y)
+		c3gen2, _ := CrossoverCreatures(c1, c2, X, Y)
 		nextGeneration = append(nextGeneration, &c3gen2)
 	}
 	return &World{
@@ -94,5 +84,11 @@ func (w *World) NewWorldFromDebug() *World {
 			Size:      w.Grid.Size,
 		},
 		cycleNo: 0,
+	}
+}
+
+func (w *World) Run(simLength int) {
+	for i := 1; i < simLength; i++ {
+		w.Cycle()
 	}
 }
