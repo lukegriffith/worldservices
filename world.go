@@ -7,7 +7,7 @@ import (
 type World struct {
 	Grid    Grid
 	cycleNo int
-	History WorldHistory
+	history WorldHistory
 }
 
 func generateSafeLocation(locations map[string]WorldObject, size int) (int, int) {
@@ -35,7 +35,7 @@ func NewWorld(size int, pop int) World {
 		locations[formatCoords(x, y)] = creature
 		creatures = append(creatures, creature)
 	}
-	return World{Grid{creatures, locations, size}, 0}
+	return World{Grid{creatures, locations, size}, 0, WorldHistory{}}
 }
 
 func (w *World) Oscilator() float64 {
@@ -43,7 +43,7 @@ func (w *World) Oscilator() float64 {
 }
 
 func (w *World) Cycle() {
-	w.History.Push(w.Grid)
+	w.history.Push(w.Grid)
 	objects := w.Grid.GetOrderedObjectListByFitness()
 	for _, o := range objects {
 		o.Process(w.Grid, w.Oscilator())
@@ -52,14 +52,23 @@ func (w *World) Cycle() {
 	w.cycleNo = w.cycleNo + 1
 }
 
+func (w World) GetCycle(cycle int) Grid {
+	return w.history.Get(cycle)
+}
+
+func (w *World) Run(simLength int) {
+	for i := 1; i < simLength; i++ {
+		w.Cycle()
+	}
+}
+
 // NewWorldFromDebug
 // creates a new world from the creatures in debug mode
 // using the crossover function.
-func NewWorldFromDebug(world string) *World {
-	w := GetWorld(world)
+func NewWorldFromDebug(objects []WorldObject, newWorldSize int) World {
+
 	nextGeneration := []WorldObject{}
 	debuggedObjects := []WorldObject{}
-	objects := w.Grid.GetOrderedObjectListByFitness()
 
 	for _, obj := range objects {
 		c := obj.(*NormalCreature)
@@ -73,22 +82,21 @@ func NewWorldFromDebug(world string) *World {
 		debuggedObjects = debuggedObjects[1:]
 		c2 := debuggedObjects[0].(*NormalCreature)
 		debuggedObjects = debuggedObjects[1:]
-		X, Y := generateSafeLocation(locations, w.Grid.Size)
+		X, Y := generateSafeLocation(locations, newWorldSize)
 		c3gen2, _ := CrossoverCreatures(c1, c2, X, Y)
 		nextGeneration = append(nextGeneration, &c3gen2)
 	}
-	return &World{
+	return World{
 		Grid: Grid{
 			objects:   nextGeneration,
 			locations: nil,
-			Size:      w.Grid.Size,
+			Size:      newWorldSize,
 		},
 		cycleNo: 0,
 	}
 }
 
-func (w *World) Run(simLength int) {
-	for i := 1; i < simLength; i++ {
-		w.Cycle()
-	}
+func WorldFromDebugOfWorlds(g1 Grid, g2 Grid) World {
+	objects := append(g1.objects, g2.objects...)
+	return NewWorldFromDebug(objects, g1.Size)
 }

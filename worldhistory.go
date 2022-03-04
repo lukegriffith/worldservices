@@ -1,8 +1,7 @@
 package worldservices
 
 type WorldHistory struct {
-	timeline  []Grid
-	simLength int
+	timeline []Grid
 }
 
 func (wh WorldHistory) Push(grid Grid) {

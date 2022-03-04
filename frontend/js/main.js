@@ -150,5 +150,3 @@ function renderGrid() {
     });
 }
 
-// server sync every 250ms.
-setInterval(cycle, 100)
