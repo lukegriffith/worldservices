@@ -25,17 +25,28 @@
     ga('create', 'UA-XXXXX-Y', 'auto'); ga('set', 'anonymizeIp', true); ga('set', 'transport', 'beacon'); ga('send', 'pageview')
   </script>
   <script src="https://www.google-analytics.com/analytics.js" async></script>
-
+  
+  <input type="button" value="refresh worlds" onclick="getWorlds();">
   <input type="button" value="breed" onclick="breed();">
   <input type="button" value="reset" onclick="reset();">
   <input id="pause" type="button" value="start" onclick="pause();">
   <input id="pause" type="button" value="next" onclick="next();">
+  <br>
+  <label for="size">World Name</label>
+  <input name="name" id="name" type="text" value="test1">
   <label for="size">World Size</label>
   <input name="size" id="size" type="text" value="500">
   <label for="pop">Pop Size</label>
   <input name="pop" id="pop" type="text" value="30">
+  <input type="button" value="new" onclick="newWorld();">
  
   <div id="cycle"></div>
+
+  <section id="worldList"> 
+    
+  </section>
+
+
   <main id="world">
 
     <!-- Programatically create a bunch of div's. Size is so it fits correctly.

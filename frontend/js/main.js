@@ -3,6 +3,57 @@ var paused = true
 var fps = 10
 var cycleNum
 
+var selectedWorld = null;
+
+function createRadioElement( name, value, checked ) {
+    var radioInput;
+
+    radioInput = document.createElement('input');
+    radioInput.setAttribute('type', 'radio');
+    radioInput.setAttribute('name', name);
+    radioInput.setAttribute('value', value)
+    if ( checked ) {
+        radioInput.setAttribute('checked', 'checked');
+    }
+    radioInput.onclick = x => selectedWorld = document.querySelector('input[name="worlds"]:checked').value
+    return radioInput;
+}
+
+function createLabelElement( name ) {
+    var label;
+
+    label = document.createElement('label')
+    label.setAttribute('for', name)
+    label.innerText = name
+    return label
+}
+
+// UI Elements
+function getWorlds() {
+    fetch("world")    
+        .then(response => response.json())
+        .then(data => {
+            worldList = document.getElementById("worldList")
+            worldList.innerHTML = ""
+            data.forEach(w => {
+                worldList.appendChild(createRadioElement('worlds', w, false))
+                worldList.appendChild(createLabelElement(w))
+            })
+        })
+}
+
+
+function newWorld() {
+    size = document.getElementById('size')
+    population = document.getElementById('pop')
+    worldName = document.getElementById('name')
+    fetch("world?size="+ size.value +"&pop="+ population.value +"&world="+ worldName.value, {
+        method: 'POST'
+    })
+}
+
+
+
 
 function pause() {
     button = document.getElementById('pause')
@@ -36,7 +87,6 @@ function cycle() {
 function realCycle() {
     cycleNum++
     updateCycleStatus()
-    fetch('cycle')
     refreshBoard()
 }
 
@@ -62,9 +112,6 @@ function resetCanvas() {
 
 function reset() {
     updateCycleStatus()
-    size = document.getElementById('size')
-    population = document.getElementById('pop')
-    fetch('reset?worldsize=' + size.value + '&pop=' + population.value)
     resetCanvas()
 }
 
@@ -84,7 +131,7 @@ function refreshBoard() {
     function updateBoard(data) {
         creatures = data
     }
-    return fetch('board')
+    return fetch('board?world='+selectedWorld+'&cycle='+cycleNum)
     .then(response => response.json())
     .then(data => updateBoard(data));
 }
@@ -112,6 +159,11 @@ function getCreatures(x,y){
 }
 
 
+
+// p5 JS 
+
+
+
 function drawCreature(x, y, i, a) {
     setTimeout(10)
 
@@ -124,10 +176,13 @@ function drawCreature(x, y, i, a) {
     fill(c)
 }
 
+
+
 function canvasClickHandler() {
     getCreatures(int(mouseX), int(mouseY))
     
 }
+
 
 function setup() {
     size = document.getElementById('size').value
@@ -150,3 +205,4 @@ function renderGrid() {
     });
 }
 
+setTimeout(cycle, 31)
