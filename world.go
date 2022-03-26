@@ -7,7 +7,7 @@ import (
 type World struct {
 	Grid    Grid
 	cycleNo int
-	history WorldHistory
+	history *WorldHistory
 }
 
 func generateSafeLocation(locations map[string]WorldObject, size int) (int, int) {
@@ -35,7 +35,7 @@ func NewWorld(size int, pop int) World {
 		locations[formatCoords(x, y)] = creature
 		creatures = append(creatures, creature)
 	}
-	return World{Grid{creatures, locations, size}, 0, WorldHistory{}}
+	return World{Grid{creatures, locations, size, 0}, 0, &WorldHistory{}}
 }
 
 func (w *World) Oscilator() float64 {
@@ -50,10 +50,12 @@ func (w *World) Cycle() {
 	}
 	w.Grid.UpdateLocationsCoords()
 	w.cycleNo = w.cycleNo + 1
+	w.Grid.cycle = w.cycleNo
 }
 
-func (w World) GetCycle(cycle int) Grid {
-	return w.history.Get(cycle)
+func (w *World) GetCycle(cycle int) GridHistory {
+	g := w.history.Get(cycle)
+	return g
 }
 
 func (w *World) Run(simLength int) {

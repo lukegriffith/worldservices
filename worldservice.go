@@ -1,18 +1,25 @@
 package worldservices
 
+type worldService map[string]*World
+
 var (
-	Worlds map[string]World
+	Worlds worldService
 )
 
-func GetWorldBoard(name string, cycle int) Grid {
-	grid := Worlds[name].GetCycle(cycle)
+func NewWorldService() {
+	Worlds = make(worldService)
+}
+
+func GetWorldBoard(name string, cycle int) GridHistory {
+	world := Worlds[name]
+	grid := world.GetCycle(cycle)
 	return grid
 }
 
 func GetWorld(name string) World {
-	return Worlds[name]
+	return *Worlds[name]
 }
 
 func RegisterWorld(name string, w World) {
-	Worlds[name] = w
+	Worlds[name] = &w
 }

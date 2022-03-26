@@ -12,10 +12,11 @@ type Grid struct {
 	objects   []WorldObject
 	locations map[string]WorldObject
 	Size      int
+	cycle     int
 }
 
 func NewGrid(obj []WorldObject, loc map[string]WorldObject, size int) Grid {
-	return Grid{obj, loc, size}
+	return Grid{obj, loc, size, 0}
 }
 
 func (g *Grid) GetOrderedObjectListByFitness() []WorldObject {
@@ -56,6 +57,8 @@ func (g *Grid) GetObjectAtCoords(x int, y int) (WorldObject, error) {
 
 // This basically means if any creatures overlap they get removed from the map.
 // objects will still exists though.
+// this map is used for object selection - probably not good things get removed.
+// TODO improve this
 func (g *Grid) UpdateLocationsCoords() {
 	locations := map[string]WorldObject{}
 	objects := g.GetOrderedObjectListByFitness()

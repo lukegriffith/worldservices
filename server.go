@@ -14,18 +14,18 @@ var (
 	CycleKeyName      = "cycle"
 	World1KeyName     = "world1"
 	World2KeyName     = "world2"
-	WorldSizeKeyName  = "worldsize"
+	WorldSizeKeyName  = "size"
 	PopulationKeyName = "pop"
 
-	SimLength = 2024
+	SimLength = 512
 )
 
-func findGrid(keyName string, r *http.Request) (Grid, string, error) {
+func findGrid(keyName string, r *http.Request) (GridHistory, string, error) {
 	m, _ := url.ParseQuery(r.URL.RawQuery)
 	worldName := m[WorldKeyName][0]
 	cycle, err := strconv.Atoi(m[CycleKeyName][0])
 	if err != nil {
-		return Grid{}, "", err
+		return GridHistory{}, "", err
 	}
 	return GetWorldBoard(worldName, cycle), worldName, nil
 }
@@ -59,6 +59,7 @@ func getWorld(w http.ResponseWriter, r *http.Request) {
 func addToWorldService(w http.ResponseWriter, r *http.Request) {
 	m, _ := url.ParseQuery(r.URL.RawQuery)
 	worldName := m[WorldKeyName][0]
+	fmt.Println(m)
 	size, err := strconv.Atoi(m[WorldSizeKeyName][0])
 	if err != nil {
 		log.Println("unable to parse size")
@@ -90,7 +91,7 @@ func getBoard(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 
-	objects := grid.GetOrderedObjectListByFitness()
+	objects := grid.objects
 	jsonResp, err := json.Marshal(objects)
 	if err != nil {
 		log.Fatalf("Error happened in JSON marshal. Err: %s", err)
@@ -99,6 +100,10 @@ func getBoard(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(jsonResp)
 }
+
+/*
+
+TODO:  This dont work no more.
 
 func breedWorld(w http.ResponseWriter, r *http.Request) {
 	grid1, g1Name, err := findGrid(World1KeyName, r)
@@ -121,6 +126,7 @@ func CreaturesServer(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+TODO: This also needs re thinking
 func getCreatureAtCoords(w http.ResponseWriter, r *http.Request) {
 	grid, _, err := findGrid(WorldKeyName, r)
 	if err != nil {
@@ -147,14 +153,18 @@ func getCreatureAtCoords(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(jsonResp)
 }
+*/
 
 func SetupServer(port string, staticPath string) {
+	NewWorldService()
 	http.HandleFunc("/board", BoardServer)
 	http.HandleFunc("/world", WorldServer)
-	http.HandleFunc("/creatures", CreaturesServer)
+	//http.HandleFunc("/creatures", CreaturesServer)
 	//http.HandleFunc("/creatures", getCreatureAtCoords)
 
-	http.HandleFunc("/breed", breedWorld)
+	//http.HandleFunc("/breed", breedWorld)
+
+	Worlds = map[string]*World{}
 
 	fs := http.FileServer(http.Dir(staticPath))
 	http.Handle("/", fs)

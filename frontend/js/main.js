@@ -81,7 +81,7 @@ function cycle() {
     if (!paused){
         realCycle()
     }       
-
+    setTimeout(cycle, 31)
 }
 
 function realCycle() {
@@ -205,4 +205,4 @@ function renderGrid() {
     });
 }
 
-setTimeout(cycle, 31)
+cycle()
