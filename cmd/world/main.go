@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/lukegriffith/worldservices/pkg/server"
+	"github.com/lukegriffith/worldservices/internal/server"
 )
 
 func main() {
