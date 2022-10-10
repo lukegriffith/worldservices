@@ -93,8 +93,7 @@ func NewWorldFromDebug(objects []worldobject.WorldObject, newWorldSize int) Worl
 		X, Y := generateSafeLocation(locations, newWorldSize)
 		c3 := creatures.NewNormalCreature(X, Y)
 		c3gen2, _ := ml.CrossoverCreatures(c1, c2, c3)
-		c3gen2crit := c3gen2.(creatures.NormalCreature)
-		nextGeneration = append(nextGeneration, &c3gen2crit)
+		nextGeneration = append(nextGeneration, c3gen2)
 	}
 	return World{
 		Grid:    grid.NewGrid(nextGeneration, nil, newWorldSize),

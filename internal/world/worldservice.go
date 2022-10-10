@@ -1,5 +1,7 @@
 package world
 
+import "errors"
+
 type worldService map[string]*World
 
 var (
@@ -10,10 +12,13 @@ func NewWorldService() {
 	Worlds = make(worldService)
 }
 
-func GetWorldBoard(name string, cycle int) GridHistory {
-	world := Worlds[name]
-	grid := world.GetCycle(cycle)
-	return grid
+func GetWorldBoard(name string, cycle int) (GridHistory, error) {
+	if world, ok := Worlds[name]; ok {
+		grid := world.GetCycle(cycle)
+		return grid, nil
+	}
+	return GridHistory{}, errors.New("World not found")
+
 }
 
 func GetWorld(name string) World {

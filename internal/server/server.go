@@ -24,12 +24,18 @@ var (
 
 func findGrid(keyName string, r *http.Request) (world.GridHistory, string, error) {
 	m, _ := url.ParseQuery(r.URL.RawQuery)
+	log.Println(m)
 	worldName := m[WorldKeyName][0]
 	cycle, err := strconv.Atoi(m[CycleKeyName][0])
 	if err != nil {
 		return world.GridHistory{}, "", err
 	}
-	return world.GetWorldBoard(worldName, cycle), worldName, nil
+	worldBoard, err := world.GetWorldBoard(worldName, cycle)
+
+	if err != nil {
+		return worldBoard, worldName, err
+	}
+	return worldBoard, worldName, nil
 }
 
 func WorldServer(w http.ResponseWriter, r *http.Request) {
@@ -88,9 +94,11 @@ func BoardServer(w http.ResponseWriter, r *http.Request) {
 func getBoard(w http.ResponseWriter, r *http.Request) {
 	// TODO make world singleton a service with parameters recieved.
 	// have that find the world, and cycle number of the board.
-	grid, _, err := findGrid(WorldKeyName, r)
+	grid, worldName, err := findGrid(WorldKeyName, r)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		log.Println("Unable to located world, world name '", worldName, "'")
+		return
 	}
 
 	objects := grid.Objects()

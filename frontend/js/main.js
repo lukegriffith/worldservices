@@ -131,6 +131,12 @@ function refreshBoard() {
     function updateBoard(data) {
         creatures = data
     }
+    if (selectedWorld == null) {
+        alert("Refresh worlds and select world")
+    }
+    if (cycleNum == NaN) {
+        alert("Reset Cycle")
+    }
     return fetch('board?world='+selectedWorld+'&cycle='+cycleNum)
     .then(response => response.json())
     .then(data => updateBoard(data));

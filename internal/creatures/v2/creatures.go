@@ -18,12 +18,12 @@ type NormalCreature struct {
 	Debug               bool
 }
 
-func (b NormalCreature) Fitness() float64 {
+func (b *NormalCreature) Fitness() float64 {
 	fitness := float64((b.S.Health * b.S.Speed) - b.S.Age)
 	return fitness
 }
 
-func (b NormalCreature) GetCoordsXY() (int, int) {
+func (b *NormalCreature) GetCoordsXY() (int, int) {
 	return b.X, b.Y
 }
 
@@ -34,7 +34,7 @@ func updateDistanceNeuronV2(distance float64, neuron *float64) {
 
 // Some how this determines sensory data for distance. It wasn't thought
 // much about.
-func (b NormalCreature) Sense(objects []NormalCreature, oscilator float64, age float64) []float64 {
+func (b *NormalCreature) Sense(objects []worldobject.WorldObject, oscilator float64, age float64) []float64 {
 
 	bX, bY := b.GetCoordsXY()
 	var xPlusNeuron, xMinusNeuron, yPlusNeuron, yMinusNeuron float64
@@ -58,18 +58,13 @@ func (b NormalCreature) Sense(objects []NormalCreature, oscilator float64, age f
 	return []float64{xPlusNeuron, xMinusNeuron, yPlusNeuron, yMinusNeuron, oscilator, age}
 }
 
-func (b NormalCreature) Process(gridObj interface{}, oscilator float64) {
+func (b *NormalCreature) Process(gridObj interface{}, oscilator float64) {
 	// board input.
 	// build inputs from grid and creature
 
 	g := gridObj.(grid.Grid)
 	sensedObjects := g.GetObjectSenseData(b.X, b.Y, b.S.Focus)
-	creatures := []NormalCreature{}
-	for _, obj := range sensedObjects {
-		c := obj.(NormalCreature)
-		creatures = append(creatures, c)
-	}
-	neuralInput := b.Sense(creatures, oscilator, float64(b.S.Age))
+	neuralInput := b.Sense(sensedObjects, oscilator, float64(b.S.Age))
 	network := b.GetBrain()
 	controlSequence := network.Predict(neuralInput)
 	b.LastControlSequence = controlSequence
@@ -114,15 +109,15 @@ func (b NormalCreature) Process(gridObj interface{}, oscilator float64) {
 
 }
 
-func (b NormalCreature) SetDebug() {
+func (b *NormalCreature) SetDebug() {
 	b.Debug = !b.Debug
 }
 
-func (b NormalCreature) GetBrain() *deep.Neural {
+func (b *NormalCreature) GetBrain() *deep.Neural {
 	return b.net
 }
 
-func (b NormalCreature) SetBrain(d *deep.Neural) {
+func (b *NormalCreature) SetBrain(d *deep.Neural) {
 	b.net = d
 }
 
