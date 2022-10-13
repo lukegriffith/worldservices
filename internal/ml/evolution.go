@@ -1,19 +1,23 @@
-package worldservices
+package ml
 
-import "github.com/patrikeh/go-deep"
+import (
+	"github.com/patrikeh/go-deep"
+
+	"github.com/lukegriffith/worldservices/internal/worldobject"
+)
 
 // TODO: Need to implement crossover.
 // crossover point
 // select a random crossover point (range 0, len(Net.Layers))
 // X & Y is new creature location
 // returned int is crossover point.
-func CrossoverCreatures(c1 *NormalCreature, c2 *NormalCreature, X int, Y int) (NormalCreature, int) {
+func CrossoverCreatures(c1 worldobject.WorldObject, c2 worldobject.WorldObject, c3 worldobject.WorldObject) (worldobject.WorldObject, int) {
 
 	n1 := c1.GetBrain()
 	n2 := c2.GetBrain()
 	// Could also do every other layer interlaced.
 
-	crossoverPoint := randomNumber(0, len(n1.Layers))
+	crossoverPoint := worldobject.RandomNumber(0, len(n1.Layers))
 	l1 := n1.Layers[:crossoverPoint]
 	l2 := n2.Layers[crossoverPoint:]
 	b1 := n1.Biases[:crossoverPoint]
@@ -21,20 +25,11 @@ func CrossoverCreatures(c1 *NormalCreature, c2 *NormalCreature, X int, Y int) (N
 
 	l3 := append(l1, l2...)
 	b3 := append(b1, b2...)
-
-	c3gen2 := NormalCreature{
-		S:                   NewRandomStats(),
-		X:                   X,
-		Y:                   Y,
-		LastControlSequence: nil,
-		LastInputNeurons:    nil,
-		Debug:               false,
-	}
 	brain := &deep.Neural{
 		Layers: l3,
 		Biases: b3,
 		Config: n2.Config,
 	}
-	c3gen2.SetBrain(brain)
-	return c3gen2, crossoverPoint
+	c3.SetBrain(brain)
+	return c3, crossoverPoint
 }

@@ -1,4 +1,4 @@
-package worldservices_test
+package grid_test
 
 import (
 	"testing"

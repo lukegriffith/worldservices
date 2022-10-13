@@ -1,13 +1,16 @@
-package worldservices
+package creatures
 
 import (
 	"math"
 
+	"github.com/lukegriffith/worldservices/internal/grid"
+	"github.com/lukegriffith/worldservices/internal/ml"
+	"github.com/lukegriffith/worldservices/internal/worldobject"
 	"github.com/patrikeh/go-deep"
 )
 
 type NormalCreature struct {
-	S                   Stats
+	S                   worldobject.Stats
 	X, Y                int
 	net                 *deep.Neural
 	LastControlSequence []float64
@@ -31,7 +34,7 @@ func updateDistanceNeuronV2(distance float64, neuron *float64) {
 
 // Some how this determines sensory data for distance. It wasn't thought
 // much about.
-func (b *NormalCreature) Sense(objects []WorldObject, oscilator float64, age float64) []float64 {
+func (b *NormalCreature) Sense(objects []worldobject.WorldObject, oscilator float64, age float64) []float64 {
 
 	bX, bY := b.GetCoordsXY()
 	var xPlusNeuron, xMinusNeuron, yPlusNeuron, yMinusNeuron float64
@@ -55,9 +58,11 @@ func (b *NormalCreature) Sense(objects []WorldObject, oscilator float64, age flo
 	return []float64{xPlusNeuron, xMinusNeuron, yPlusNeuron, yMinusNeuron, oscilator, age}
 }
 
-func (b *NormalCreature) Process(g Grid, oscilator float64) {
+func (b *NormalCreature) Process(gridObj interface{}, oscilator float64) {
 	// board input.
 	// build inputs from grid and creature
+
+	g := gridObj.(grid.Grid)
 	sensedObjects := g.GetObjectSenseData(b.X, b.Y, b.S.Focus)
 	neuralInput := b.Sense(sensedObjects, oscilator, float64(b.S.Age))
 	network := b.GetBrain()
@@ -66,7 +71,7 @@ func (b *NormalCreature) Process(g Grid, oscilator float64) {
 	b.LastInputNeurons = neuralInput
 	b.S.Age = b.S.Age + 1
 
-	_, largestIndex := minMax(controlSequence)
+	_, largestIndex := worldobject.MinMax(controlSequence)
 
 	value := controlSequence[largestIndex]
 	// Added ability for a creature to stay still if no neuron fires above .50
@@ -119,8 +124,8 @@ func (b *NormalCreature) SetBrain(d *deep.Neural) {
 func NewNormalCreature(x int, y int) *NormalCreature {
 	// Initial chromosones
 	// Cross over if bread
-	n := createNetwork(6, []int{2, 2, 4})
+	n := ml.CreateNetwork(6, []int{2, 2, 4})
 	//trainNetwork(n, BasicTrainingWOscilationAndAge)
 	// Train network based on chromosones
-	return &NormalCreature{NewRandomStats(), x, y, n, nil, nil, false}
+	return &NormalCreature{worldobject.NewRandomStats(), x, y, n, nil, nil, false}
 }

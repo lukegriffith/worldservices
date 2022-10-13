@@ -1,16 +1,20 @@
-package worldservices
+package worldobject
 
 import (
 	"math"
 	"math/rand"
 	"time"
+
+	"github.com/patrikeh/go-deep"
 )
 
 type WorldObject interface {
 	Fitness() float64
 	GetCoordsXY() (int, int)
-	Process(Grid, float64)
+	Process(interface{}, float64)
 	SetDebug()
+	GetBrain() *deep.Neural
+	SetBrain(d *deep.Neural)
 }
 
 type Stats struct {
@@ -22,7 +26,7 @@ type Stats struct {
 	Age   int
 }
 
-func randomNumber(min int, max int) int {
+func RandomNumber(min int, max int) int {
 	rand.Seed(time.Now().UnixNano())
 	return rand.Intn(max-min+1) + min
 }
@@ -30,15 +34,15 @@ func randomNumber(min int, max int) int {
 func NewRandomStats() Stats {
 
 	return Stats{
-		randomNumber(60, 100),
-		randomNumber(1, 10),
-		randomNumber(10, 25),
-		randomNumber(1, 4),
-		randomNumber(0, 80),
+		RandomNumber(60, 100),
+		RandomNumber(1, 10),
+		RandomNumber(10, 25),
+		RandomNumber(1, 4),
+		RandomNumber(0, 80),
 	}
 }
 
-func updateDistanceNeuron(distance float64, neuron *float64) {
+func UpdateDistanceNeuron(distance float64, neuron *float64) {
 	absDist := math.Abs(distance)
 	if absDist == 1 {
 		*neuron = 1.0
@@ -50,7 +54,7 @@ func updateDistanceNeuron(distance float64, neuron *float64) {
 	}
 }
 
-func minMax(array []float64) (int, int) {
+func MinMax(array []float64) (int, int) {
 	var max float64 = array[0]
 	var maxIndex int
 	var min float64 = array[0]

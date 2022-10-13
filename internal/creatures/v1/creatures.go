@@ -1,6 +1,9 @@
-package worldservices
+package creatures
 
 import (
+	"github.com/lukegriffith/worldservices/internal/grid"
+	"github.com/lukegriffith/worldservices/internal/world"
+
 	"github.com/patrikeh/go-deep"
 )
 
@@ -26,7 +29,7 @@ func (b *BasicCreature) SetDebug() {
 
 // Some how this determines sensory data for distance. It wasn't thought
 // much about.
-func (b *BasicCreature) Sense(objects []WorldObject) []float64 {
+func (b *BasicCreature) Sense(objects []world.WorldObject) []float64 {
 	bX, bY := b.GetCoordsXY()
 	var xPlusNeuron, xMinusNeuron, yPlusNeuron, yMinusNeuron float64
 	for _, obj := range objects {
@@ -35,22 +38,22 @@ func (b *BasicCreature) Sense(objects []WorldObject) []float64 {
 		ydistance := float64(objY - bY)
 
 		if xdistance > 0 {
-			updateDistanceNeuron(xdistance, &xPlusNeuron)
+			world.UpdateDistanceNeuron(xdistance, &xPlusNeuron)
 		} else {
-			updateDistanceNeuron(xdistance, &xMinusNeuron)
+			world.UpdateDistanceNeuron(xdistance, &xMinusNeuron)
 		}
 
 		if ydistance > 0 {
-			updateDistanceNeuron(ydistance, &yPlusNeuron)
+			world.UpdateDistanceNeuron(ydistance, &yPlusNeuron)
 		} else {
-			updateDistanceNeuron(ydistance, &yMinusNeuron)
+			world.UpdateDistanceNeuron(ydistance, &yMinusNeuron)
 		}
 
 	}
 	return []float64{xPlusNeuron, xMinusNeuron, yPlusNeuron, yMinusNeuron}
 }
 
-func (b *BasicCreature) Process(g Grid) {
+func (b *BasicCreature) Process(g grid.Grid) {
 	// board input.
 	// build inputs from grid and creature
 	sensedObjects := g.GetObjectSenseData(b.X, b.Y, b.S.Focus)

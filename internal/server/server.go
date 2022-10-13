@@ -1,4 +1,4 @@
-package worldservices
+package server
 
 import (
 	"encoding/json"
@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+
+	"github.com/lukegriffith/worldservices/internal/world"
 )
 
 var (
@@ -20,14 +22,20 @@ var (
 	SimLength = 512
 )
 
-func findGrid(keyName string, r *http.Request) (GridHistory, string, error) {
+func findGrid(keyName string, r *http.Request) (world.GridHistory, string, error) {
 	m, _ := url.ParseQuery(r.URL.RawQuery)
+	log.Println(m)
 	worldName := m[WorldKeyName][0]
 	cycle, err := strconv.Atoi(m[CycleKeyName][0])
 	if err != nil {
-		return GridHistory{}, "", err
+		return world.GridHistory{}, "", err
 	}
-	return GetWorldBoard(worldName, cycle), worldName, nil
+	worldBoard, err := world.GetWorldBoard(worldName, cycle)
+
+	if err != nil {
+		return worldBoard, worldName, err
+	}
+	return worldBoard, worldName, nil
 }
 
 func WorldServer(w http.ResponseWriter, r *http.Request) {
@@ -43,8 +51,8 @@ func WorldServer(w http.ResponseWriter, r *http.Request) {
 }
 
 func getWorld(w http.ResponseWriter, r *http.Request) {
-	keys := make([]string, 0, len(Worlds))
-	for k := range Worlds {
+	keys := make([]string, 0, len(world.Worlds))
+	for k := range world.Worlds {
 		keys = append(keys, k)
 	}
 	jsonResp, err := json.Marshal(keys)
@@ -68,9 +76,9 @@ func addToWorldService(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println("unable to parse pop")
 	}
-	world := NewWorld(size, pop)
-	world.Run(SimLength)
-	RegisterWorld(worldName, world)
+	simworld := world.NewWorld(size, pop)
+	simworld.Run(SimLength)
+	world.RegisterWorld(worldName, simworld)
 }
 
 func BoardServer(w http.ResponseWriter, r *http.Request) {
@@ -86,12 +94,14 @@ func BoardServer(w http.ResponseWriter, r *http.Request) {
 func getBoard(w http.ResponseWriter, r *http.Request) {
 	// TODO make world singleton a service with parameters recieved.
 	// have that find the world, and cycle number of the board.
-	grid, _, err := findGrid(WorldKeyName, r)
+	grid, worldName, err := findGrid(WorldKeyName, r)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		log.Println("Unable to located world, world name '", worldName, "'")
+		return
 	}
 
-	objects := grid.objects
+	objects := grid.Objects()
 	jsonResp, err := json.Marshal(objects)
 	if err != nil {
 		log.Fatalf("Error happened in JSON marshal. Err: %s", err)
@@ -156,7 +166,7 @@ func getCreatureAtCoords(w http.ResponseWriter, r *http.Request) {
 */
 
 func SetupServer(port string, staticPath string) {
-	NewWorldService()
+	world.NewWorldService()
 	http.HandleFunc("/board", BoardServer)
 	http.HandleFunc("/world", WorldServer)
 	//http.HandleFunc("/creatures", CreaturesServer)
@@ -164,7 +174,7 @@ func SetupServer(port string, staticPath string) {
 
 	//http.HandleFunc("/breed", breedWorld)
 
-	Worlds = map[string]*World{}
+	world.Worlds = map[string]*world.World{}
 
 	fs := http.FileServer(http.Dir(staticPath))
 	http.Handle("/", fs)

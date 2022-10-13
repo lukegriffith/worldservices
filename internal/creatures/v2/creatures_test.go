@@ -1,4 +1,4 @@
-package worldservices_test
+package creatures_test
 
 import (
 	"testing"

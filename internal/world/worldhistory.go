@@ -1,17 +1,20 @@
-package worldservices
+package world
 
-import "github.com/jinzhu/copier"
+import (
+	"github.com/jinzhu/copier"
+	"github.com/lukegriffith/worldservices/internal/grid"
+)
 
 type WorldHistory struct {
 	timeline []GridHistory
 }
 
-func (wh *WorldHistory) Push(grid Grid) {
+func (wh *WorldHistory) Push(grid grid.Grid) {
 	gridCopy := GridHistory{}
 	copier.Copy(&gridCopy, &grid)
 	gridCopy.objects = []Fossil{}
 
-	for _, creature := range grid.objects {
+	for _, creature := range grid.GetObjects() {
 		X, Y := creature.GetCoordsXY()
 		gridCopy.objects = append(gridCopy.objects, Fossil{X, Y})
 	}
@@ -31,4 +34,8 @@ type GridHistory struct {
 	locations map[string]Fossil
 	Size      int
 	cycle     int
+}
+
+func (g GridHistory) Objects() []Fossil {
+	return g.objects
 }

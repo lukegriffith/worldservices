@@ -1,4 +1,4 @@
-package worldservices_test
+package ml_test
 
 import (
 	"testing"

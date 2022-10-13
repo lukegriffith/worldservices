@@ -1,4 +1,4 @@
-package worldservices
+package ml
 
 import (
 	deep "github.com/patrikeh/go-deep"
@@ -46,7 +46,7 @@ var (
 	}
 )
 
-func createNetwork(inputs int, layout []int) *deep.Neural {
+func CreateNetwork(inputs int, layout []int) *deep.Neural {
 	return deep.NewNeural(&deep.Config{
 		/* Input dimensionality */
 		Inputs: inputs,

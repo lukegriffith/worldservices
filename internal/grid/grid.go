@@ -1,27 +1,28 @@
-package worldservices
+package grid
 
 import (
 	"errors"
 	"fmt"
 	"sort"
 
+	"github.com/lukegriffith/worldservices/internal/worldobject"
 	cartesian "github.com/schwarmco/go-cartesian-product"
 )
 
 type Grid struct {
-	objects   []WorldObject
-	locations map[string]WorldObject
+	objects   []worldobject.WorldObject
+	locations map[string]worldobject.WorldObject
 	Size      int
 	cycle     int
 }
 
-func NewGrid(obj []WorldObject, loc map[string]WorldObject, size int) Grid {
+func NewGrid(obj []worldobject.WorldObject, loc map[string]worldobject.WorldObject, size int) Grid {
 	return Grid{obj, loc, size, 0}
 }
 
-func (g *Grid) GetOrderedObjectListByFitness() []WorldObject {
-	ordered_objects := []WorldObject{}
-	grouped_objects := map[float64][]WorldObject{}
+func (g *Grid) GetOrderedObjectListByFitness() []worldobject.WorldObject {
+	ordered_objects := []worldobject.WorldObject{}
+	grouped_objects := map[float64][]worldobject.WorldObject{}
 	for _, obj := range g.objects {
 		fitness := obj.Fitness()
 		slice := grouped_objects[fitness]
@@ -42,12 +43,12 @@ func (g *Grid) GetOrderedObjectListByFitness() []WorldObject {
 	return ordered_objects
 }
 
-func formatCoords(x int, y int) string {
+func FormatCoords(x int, y int) string {
 	return fmt.Sprintf("%dx%d", x, y)
 }
 
-func (g *Grid) GetObjectAtCoords(x int, y int) (WorldObject, error) {
-	loc := formatCoords(x, y)
+func (g *Grid) GetObjectAtCoords(x int, y int) (worldobject.WorldObject, error) {
+	loc := FormatCoords(x, y)
 	if val, ok := g.locations[loc]; ok {
 		return val, nil
 	}
@@ -60,7 +61,7 @@ func (g *Grid) GetObjectAtCoords(x int, y int) (WorldObject, error) {
 // this map is used for object selection - probably not good things get removed.
 // TODO improve this
 func (g *Grid) UpdateLocationsCoords() {
-	locations := map[string]WorldObject{}
+	locations := map[string]worldobject.WorldObject{}
 	objects := g.GetOrderedObjectListByFitness()
 	/*
 		for i, j := 0, len(objects)-1; i < j; i, j = i+1, j-2 {
@@ -70,7 +71,7 @@ func (g *Grid) UpdateLocationsCoords() {
 		}*/
 	for _, obj := range objects {
 		x, y := obj.GetCoordsXY()
-		locations[formatCoords(x, y)] = obj
+		locations[FormatCoords(x, y)] = obj
 	}
 	g.locations = locations
 }
@@ -81,12 +82,12 @@ GetObjectSenseData
 returns a list of objects that are in the sense area of the
 given coordinates
 */
-func (g *Grid) GetObjectSenseData(x int, y int, vision int) []WorldObject {
+func (g *Grid) GetObjectSenseData(x int, y int, vision int) []worldobject.WorldObject {
 	xstart := x - vision
 	ystart := y - vision
 	xrange := make([]interface{}, vision*2)
 	yrange := make([]interface{}, vision*2)
-	objects := []WorldObject{}
+	objects := []worldobject.WorldObject{}
 	for i := range xrange {
 		xrange[i] = xstart
 		yrange[i] = ystart
@@ -108,4 +109,12 @@ func (g *Grid) GetObjectSenseData(x int, y int, vision int) []WorldObject {
 		objects = append(objects, obj)
 	}
 	return objects
+}
+
+func (g *Grid) GetObjects() []worldobject.WorldObject {
+	return g.objects
+}
+
+func (g *Grid) SetCycle(c int) {
+	g.cycle = c
 }
