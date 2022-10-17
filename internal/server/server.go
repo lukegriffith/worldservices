@@ -41,7 +41,7 @@ func findGrid(keyName string, r *http.Request) (world.GridHistory, string, error
 func WorldServer(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == http.MethodGet {
-		getWorld(w, r)
+		getWorldStatuses(w, r)
 	}
 
 	if r.Method == http.MethodPost {
@@ -50,12 +50,9 @@ func WorldServer(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func getWorld(w http.ResponseWriter, r *http.Request) {
-	keys := make([]string, 0, len(world.Worlds))
-	for k := range world.Worlds {
-		keys = append(keys, k)
-	}
-	jsonResp, err := json.Marshal(keys)
+func getWorldStatuses(w http.ResponseWriter, r *http.Request) {
+	statuses := world.Worlds.GetWorldStatuses()
+	jsonResp, err := json.Marshal(statuses)
 	if err != nil {
 		log.Fatalf("Error happened in JSON marshal. Err: %s", err)
 	}
@@ -76,9 +73,15 @@ func addToWorldService(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println("unable to parse pop")
 	}
+	err = world.RegisterWorld(worldName)
+	if err != nil {
+		log.Println("world:", worldName, "is already registered")
+		w.WriteHeader(500)
+		return
+	}
 	simworld := world.NewWorld(size, pop)
 	simworld.Run(SimLength)
-	world.RegisterWorld(worldName, simworld)
+	world.SetWorld(worldName, simworld)
 }
 
 func BoardServer(w http.ResponseWriter, r *http.Request) {
@@ -174,7 +177,7 @@ func SetupServer(port string, staticPath string) {
 
 	//http.HandleFunc("/breed", breedWorld)
 
-	world.Worlds = map[string]*world.World{}
+	world.NewWorldService()
 
 	fs := http.FileServer(http.Dir(staticPath))
 	http.Handle("/", fs)

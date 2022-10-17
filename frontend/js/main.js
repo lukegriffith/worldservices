@@ -35,10 +35,11 @@ function getWorlds() {
         .then(data => {
             worldList = document.getElementById("worldList")
             worldList.innerHTML = ""
-            data.forEach(w => {
-                worldList.appendChild(createRadioElement('worlds', w, false))
-                worldList.appendChild(createLabelElement(w))
-            })
+
+            for (let [key, value] of Object.entries(data)) {
+                worldList.appendChild(createRadioElement('worlds', key, false))
+                worldList.appendChild(createLabelElement(`${key} - ${value}`))
+            }
         })
 }
 
