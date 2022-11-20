@@ -1,8 +1,12 @@
-package main
+package terminal
 
 import (
 	"context"
+	"strconv"
 
+	"github.com/faiface/pixel/pixelgl"
+	"github.com/lukegriffith/worldservices/internal/render"
+	"github.com/lukegriffith/worldservices/internal/world"
 	"github.com/rivo/tview"
 )
 
@@ -36,13 +40,32 @@ func SetupAndRun(passedContext context.Context) {
 		right.Clear()
 		getWorlds(right)
 	}
-	renderWorld := func() {
+	setRenderWorldMenu := func() {
 		right := ctx.Value(ctxRightKey).(*tview.List)
 		app := ctx.Value(ctxAppKey).(*tview.Application)
 		app.SetFocus(right)
 	}
 	createWorld := func() {
+		form := ctx.Value(ctxFormKey).(*tview.Form)
+		wNameInput := form.GetFormItem(0).(*tview.InputField)
+		wPopInput := form.GetFormItem(1).(*tview.InputField)
+		wSizeInput := form.GetFormItem(2).(*tview.InputField)
 
+		wName := wNameInput.GetText()
+		wPop, err := strconv.Atoi(wPopInput.GetText())
+		if err != nil {
+			panic(err)
+		}
+		wSize, err := strconv.Atoi(wSizeInput.GetText())
+		if err != nil {
+			panic(err)
+		}
+		register := func() {
+			world.RegisterWorld(wName)
+			w := world.NewWorld(wSize, wPop)
+			world.SetWorld(wName, w)
+		}
+		go register()
 	}
 
 	form := tview.NewForm().
@@ -57,7 +80,7 @@ func SetupAndRun(passedContext context.Context) {
 	opList := tview.NewList().
 		AddItem("Create World", "Create a new creature simulation", 'a', newWorld).
 		AddItem("Refresh Worlds", "Refreshes world list", 'b', refreshWorlds).
-		AddItem("Render World", "Renders the simulation", 'c', renderWorld).
+		AddItem("Render World", "Renders the simulation", 'c', setRenderWorldMenu).
 		AddItem("Quit", "Press to exit", 'q', func() {
 			app := ctx.Value(ctxAppKey).(*tview.Application)
 			app.Stop()
@@ -78,21 +101,19 @@ func SetupAndRun(passedContext context.Context) {
 }
 
 func getWorlds(right *tview.List) {
-	worlds := []string{"world1", "world2"}
-	for i, world := range worlds {
-		worldText := world
-		right = right.AddItem(worldText, "Not Ready", rune(i+97), func() {
-			modal := tview.NewModal().
-				SetText(worldText).
-				AddButtons([]string{"Home"}).
-				SetDoneFunc(func(buttonIndex int, buttonLabel string) {
-					if buttonLabel == "Home" {
-						home()
-					}
-				})
-			app := ctx.Value(ctxAppKey).(*tview.Application)
-			app.SetRoot(modal, true)
+	i := 0
+	worldsStatus := world.Worlds.GetWorldStatuses()
+	for worldName, status := range worldsStatus {
+		right = right.AddItem(worldName, status, rune(i+97), func() {
+			world.GetWorld(worldName)
+
+			runRender := func() {
+				render.Render(worldName)
+			}
+
+			pixelgl.Run(runRender)
 		})
+		i++
 	}
 
 }
