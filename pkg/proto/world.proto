@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+option go_package = "github.com/lukegriffith/worldservice/proto";
+
+
+service WorldService {
+  // Creates a new world object in the server
+  rpc CreateWorld(World) returns (WorldResponse) {}
+
+  // Sets a singletons value to the selected world
+  rpc SelectWorld(WorldSelectionRequest) returns (WorldResponse) {}
+
+  // Returns a list of all created worlds
+  // If an ID is provided, it returns a single world
+  rpc GetWorld(WorldRequest) returns (WorldResponse) {}
+}
+
+message World {
+  // The ID of the world
+  int32 id = 1;
+
+  // The name of the world
+  string name = 2;
+}
+
+message WorldRequest {
+  // The ID of the world to be returned
+  // If this field is not provided, all created worlds will be returned
+  int32 id = 1;
+}
+
+message WorldSelectionRequest {
+  // The ID of the world to be selected
+  int32 id = 1;
+}
+
+message WorldResponse {
+  // The selected or retrieved world
+  World world = 1;
+
+  // If an error occurs, this field will be set with the error message
+  string error = 2;
+}

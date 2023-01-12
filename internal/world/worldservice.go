@@ -1,16 +1,34 @@
 package world
 
-import "errors"
-
-type worldService struct {
-	Worlds       map[string]*World
-	WorldsStatus map[string]Status
-}
-
 var (
-	Worlds worldService
+	worldIndex int32 = 0
 )
 
+type WorldsContainer struct {
+	Worlds      []WorldsObject
+	ActiveWorld int32
+}
+
+type WorldsObject struct {
+	Id     int32
+	Name   string
+	World  *World
+	Status Status
+}
+
+func (w *WorldsContainer) NewWorld(Name string) int32 {
+	worldObj := WorldsObject{
+		Id:     worldIndex,
+		Name:   Name,
+		World:  nil,
+		Status: Pending,
+	}
+	w.Worlds = append(w.Worlds, worldObj)
+	worldIndex++
+	return worldIndex
+}
+
+/*
 func (w worldService) GetWorldStatuses() map[string]string {
 	statuses := make(map[string]string)
 	for k, v := range w.WorldsStatus {
@@ -51,3 +69,4 @@ func SetWorld(name string, w World) {
 		Worlds.WorldsStatus[name] = Ready
 	}
 }
+*/

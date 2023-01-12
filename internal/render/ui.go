@@ -7,7 +7,7 @@ import (
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/imdraw"
 	"github.com/faiface/pixel/pixelgl"
-	"github.com/lukegriffith/worldservices/internal/world"
+	"github.com/lukegriffith/worldservices/internal/creatures/v1"
 	"golang.org/x/image/colornames"
 )
 
@@ -48,8 +48,8 @@ func Render(worldName string) {
 		select {
 		case <-tick:
 			win.Clear(colornames.Aliceblue)
-			w, err := world.GetWorldBoard(worldName, cycle)
-			c := w.Objects()
+			//w, err := world.GetWorldBoard(worldName, cycle)
+			c := []creatures.BasicCreature{}
 			if err != nil {
 				panic(err)
 			}

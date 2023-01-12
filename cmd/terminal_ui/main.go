@@ -10,35 +10,52 @@ var (
 	ctx context.Context
 )
 
-type ctxKey int
+func getWorlds(right *tview.List) {
 
-const (
-	ctxAppKey ctxKey = iota
-	ctxFormKey
-	ctxRightKey
-	ctxOpListKey
-	ctxFlexKey
-)
+	for i, world := range worlds {
+		worldText := world
+		right = right.AddItem(worldText, "Not Ready", rune(i+97), func() {
+			modal := tview.NewModal().
+				SetText(worldText).
+				AddButtons([]string{"Home"}).
+				SetDoneFunc(func(buttonIndex int, buttonLabel string) {
+					if buttonLabel == "Home" {
+						home()
+					}
+				})
+			app := ctx.Value("app").(*tview.Application)
+			app.SetRoot(modal, true)
+		})
+	}
 
-func SetupAndRun(passedContext context.Context) {
-	ctx = passedContext
+}
+
+func home() {
+	app := ctx.Value("app").(*tview.Application)
+	flex := ctx.Value("flex").(*tview.Flex)
+	app.SetRoot(flex, true)
+}
+
+func main() {
+
+	ctx = context.Background()
 	app := tview.NewApplication()
-	ctx = context.WithValue(ctx, ctxAppKey, app)
+	ctx = context.WithValue(ctx, "app", app)
 
 	newWorld := func() {
-		app := ctx.Value(ctxAppKey).(*tview.Application)
-		form := ctx.Value(ctxFormKey).(*tview.Form)
+		app := ctx.Value("app").(*tview.Application)
+		form := ctx.Value("form").(*tview.Form)
 		app.SetRoot(form, true)
 
 	}
 	refreshWorlds := func() {
-		right := ctx.Value(ctxRightKey).(*tview.List)
+		right := ctx.Value("right").(*tview.List)
 		right.Clear()
 		getWorlds(right)
 	}
 	renderWorld := func() {
-		right := ctx.Value(ctxRightKey).(*tview.List)
-		app := ctx.Value(ctxAppKey).(*tview.Application)
+		right := ctx.Value("right").(*tview.List)
+		app := ctx.Value("app").(*tview.Application)
 		app.SetFocus(right)
 	}
 	createWorld := func() {
@@ -52,53 +69,28 @@ func SetupAndRun(passedContext context.Context) {
 		AddButton("Save", createWorld).
 		AddButton("Home", home)
 
-	ctx = context.WithValue(ctx, ctxFormKey, form)
+	ctx = context.WithValue(ctx, "form", form)
 
 	opList := tview.NewList().
 		AddItem("Create World", "Create a new creature simulation", 'a', newWorld).
 		AddItem("Refresh Worlds", "Refreshes world list", 'b', refreshWorlds).
 		AddItem("Render World", "Renders the simulation", 'c', renderWorld).
 		AddItem("Quit", "Press to exit", 'q', func() {
-			app := ctx.Value(ctxAppKey).(*tview.Application)
+			app := ctx.Value("app").(*tview.Application)
 			app.Stop()
 		})
-	ctx = context.WithValue(ctx, ctxOpListKey, opList)
+	ctx = context.WithValue(ctx, "opList", opList)
 
 	right := tview.NewList()
 	getWorlds(right)
-	ctx = context.WithValue(ctx, ctxRightKey, right)
+	ctx = context.WithValue(ctx, "right", right)
 	flex := tview.NewFlex().
 		AddItem(opList, 0, 1, true).
 		AddItem(right, 40, 1, true)
-	ctx = context.WithValue(ctx, ctxFlexKey, flex)
+	ctx = context.WithValue(ctx, "flex", flex)
 
 	if err := app.SetRoot(flex, true).EnableMouse(true).Run(); err != nil {
 		panic(err)
 	}
-}
 
-func getWorlds(right *tview.List) {
-	worlds := []string{"world1", "world2"}
-	for i, world := range worlds {
-		worldText := world
-		right = right.AddItem(worldText, "Not Ready", rune(i+97), func() {
-			modal := tview.NewModal().
-				SetText(worldText).
-				AddButtons([]string{"Home"}).
-				SetDoneFunc(func(buttonIndex int, buttonLabel string) {
-					if buttonLabel == "Home" {
-						home()
-					}
-				})
-			app := ctx.Value(ctxAppKey).(*tview.Application)
-			app.SetRoot(modal, true)
-		})
-	}
-
-}
-
-func home() {
-	app := ctx.Value(ctxAppKey).(*tview.Application)
-	flex := ctx.Value(ctxFlexKey).(*tview.Flex)
-	app.SetRoot(flex, true)
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"strconv"
 
+	"github.com/faiface/mainthread"
 	"github.com/faiface/pixel/pixelgl"
 	"github.com/lukegriffith/worldservices/internal/render"
 	"github.com/lukegriffith/worldservices/internal/world"
@@ -111,7 +112,16 @@ func getWorlds(right *tview.List) {
 				render.Render(worldName)
 			}
 
-			pixelgl.Run(runRender)
+			runOpenGL := func() {
+				pixelgl.Run(runRender)
+			}
+			/// :( didnt work
+			mainthread.Run(runOpenGL)
+
+			app := ctx.Value(ctxAppKey).(*tview.Application)
+			flex := ctx.Value(ctxFlexKey).(*tview.Flex)
+			app.SetRoot(flex, true)
+
 		})
 		i++
 	}
