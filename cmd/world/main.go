@@ -1,13 +1,15 @@
 package main
 
 import (
-	"fmt"
+	"context"
 
-	"github.com/lukegriffith/worldservices/internal/server"
+	"github.com/lukegriffith/worldservices/internal/terminal"
+	"github.com/lukegriffith/worldservices/internal/world"
 )
 
 func main() {
-	fmt.Println("Navigate to http://localhost:8080")
-	server.SetupServer("8080", "./frontend")
+	var ctx = context.Background()
 
+	world.NewWorldService()
+	go terminal.SetupAndRun(ctx)
 }
